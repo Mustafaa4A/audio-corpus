@@ -1,6 +1,8 @@
 const App = () => {
   return (
-    <h1>i love u yarow dhibka iga daa ani  wax sameyne waa idhibee</h1>
+    <div>
+      <h1>I Love you too my heart❤️😭😭</h1>
+    </div>
   )
 }
 
