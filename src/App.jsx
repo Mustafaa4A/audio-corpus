@@ -1,7 +1,16 @@
+import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
+import SignIn from "./components/SignIn";
+import SignUp from "./components/SignUp";
+
 const App = () => {
   return (
     <div>
-      <h1>I Love you too my heart❤️😭😭</h1>
+      <Routes>
+        <Route path="/" element={<h1>dfv</h1>} />
+        <Route path="/Login" element={<SignIn />} />
+        <Route path="/SignUp" element={<SignUp />} />
+      </Routes>
+
     </div>
   )
 }
