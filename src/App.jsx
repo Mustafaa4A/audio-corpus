@@ -1,18 +1,24 @@
 import { Route, Routes } from "react-router-dom";
-import SignIn from "./components/SignIn";
-import SignUp from "./components/SignUp";
-import Navigation from "./Navigation";
+import Navigation from "./components/Navigation";
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Contribute from './pages/Contribute';
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 
 const App = () => {
   return (
     <div>
       <Navigation />
       <Routes>
-        <Route path="/" element={<h1>dfv</h1>} />
-        <Route path="/Login" element={<SignIn />} />
-        <Route path="/SignUp" element={<SignUp />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/contribute" element={<Contribute />} />
+        <Route path="/aboutus" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/Signup" element={<SignUp />} />
       </Routes>
-
     </div>
 
   )
