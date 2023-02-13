@@ -1,19 +1,36 @@
-import { ArrowBack,  CropSquare, KeyboardVoice } from '@mui/icons-material'
+import { ArrowBack,  CropSquare, KeyboardDoubleArrowRight, KeyboardVoice } from '@mui/icons-material'
 import { Modal, Box, Button, Typography } from '@mui/material';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AudioControl from '../components/AudioControl'
 import BackArrow from '../components/BackArrow';
+import CustomBtn from '../components/CustomBtn';
 import TextDisplay from '../components/TextDisplay'
 import Wrap from '../components/Wrap'
+import data from '../data';
 
 const Contribute = () => {
   const [open, setOpen] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [text, setText] = useState();
 
   const handleModel = () => setOpen(prev => !prev);
+  const handleRecord = () => setRecording(prev => !prev);
+
+  const generateText = () => {
+    const id = parseInt(Math.random() * 10);
+    setText(data[id].text);
+  }
+
+  useEffect(() => {
+    generateText();
+  },[])
 
   return (
     <Wrap>
-      <Button onClick={handleModel}>Open modal</Button>
+      <Box>
+        <Button onClick={handleModel}>Open modal</Button>
+      </Box>
+      
       <Modal
         open={open}
         onClose={handleModel}
@@ -31,58 +48,56 @@ const Contribute = () => {
             px:2
           }}>
 
-            <Typography sx={{color:'white', fontSize:20}}>
+            {
+              (!recording) ? (
+              <Typography sx={{color:'white', fontSize:20}}>
                 Click  <KeyboardVoice sx={{color:'red' }} /> to begin recording
-            </Typography>
-            {/* <Typography sx={{color:'white', fontSize:20}}>
-                Click  <CropSquare sx={{color:'red' }} /> to save
-            </Typography> */}
-
+              </Typography>
+              ) : (
+                <Typography sx={{color:'white', fontSize:20}}>
+                  Click  <CropSquare sx={{color:'red' }} /> to save
+                </Typography>
+              )
+            }
             
-            <TextDisplay>
-                Markii maxkamadii lakeenay ayuu diiday af-celiyihii ay dowladu u qabatay doortayna mid uu yaqaanay oo uu moodayay inuusanba jirin qof qudha oo ka badiya afka-ingiriiska. 
-            </TextDisplay>
+            <TextDisplay> { text } </TextDisplay>
 
-            <AudioControl>
-              <KeyboardVoice sx={{
-                fontSize: 30,
-                color:'red'
-              }} />
-            </AudioControl>
-
-          {/* <AudioControl>
-            <CropSquare sx={{
-              fontSize: 30,
-              color:'red'
+            {
+              (!recording) ? (
+                <AudioControl onClick={handleRecord}>
+                  <KeyboardVoice sx={{
+                  fontSize: 30,
+                  color:'red'
+                 }} />
+              </AudioControl>
+              ) : (
+                <AudioControl onClick={handleRecord}>
+                  <CropSquare sx={{
+                  fontSize: 30,
+                  color:'red'
             }} />
-          </AudioControl> */}
+            </AudioControl>
+              )
+            }
+
+          
             
           </Box>
 
           <Box sx={{
             display: 'flex',
-            flexDirection: 'column',
-            m:3,
+            flexDirection: 'row',
             float: {
-              md:'right'
-            }
+              sm:'right'
+            },
+            m: 3,
           }}>
-            <Button variant="contained" color="error" sx={{
-              p: 2,
-              px: 4,
-              mb: 2,
-              color:'black',
-              backgroundColor:'white'
-            }}>
-              generate
-            </Button>
-            <Button variant="contained" color='success' disabled sx={{
-              p: 2,
-              px: 4,
-              mb: 3,
-            }}>
+            <CustomBtn color='success' onClick={generateText}>
+              Skip  <KeyboardDoubleArrowRight />
+           </CustomBtn>
+            <CustomBtn disabled>
               Submit
-            </Button>
+            </CustomBtn>
           </Box>
           
         </>

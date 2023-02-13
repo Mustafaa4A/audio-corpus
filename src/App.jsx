@@ -7,16 +7,20 @@ import Contribute from './pages/Contribute';
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Copyright from "./components/Copyright";
-
+import "./index.css";
+import Dataset from "./pages/Dataset";
 const App = () => {
   return (
     <div>
-      <Navigation />
+      
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/contribute" element={<Contribute />} />
-        <Route path="/aboutus" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/" element={<Navigation />} >
+          <Route index element={<Home />} />
+          <Route path="/contribute" element={<Contribute />} />
+          <Route path="/aboutus" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/dataset" element={<Dataset />} />
+        </Route>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
       </Routes>

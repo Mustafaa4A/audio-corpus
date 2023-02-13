@@ -6,7 +6,8 @@ const TextDisplay = ({children}) => {
     <Box sx={{
       backgroundColor: 'white',
       boxShadow: 10,
-      height:'250px',
+      height: '250px',
+      width:'100%',
       maxWidth: '700px',
       padding: 5,
       borderRadius: 1,

@@ -8,6 +8,10 @@ const pages = [
     link: "/contribute"
   },
   {
+    name: "Dataset",
+    link: "/dataset"
+  },
+  {
     name: "About Us",
     link: "/aboutus"
   },

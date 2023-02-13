@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import React from 'react'
 
-const AudioControl = ({children}) => {
+const AudioControl = ({children, ...props}) => {
   return (
     <Box sx={{
           backgroundColor: 'white',
@@ -15,7 +15,7 @@ const AudioControl = ({children}) => {
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-        }}>
+        }} {...props}>
           {children}
         </Box>
   )
