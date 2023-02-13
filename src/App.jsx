@@ -6,6 +6,7 @@ import Contact from './pages/Contact';
 import Contribute from './pages/Contribute';
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Copyright from "./components/Copyright";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
       </Routes>
+       <Copyright sx={{ mt: 5 }} />
     </div>
 
   )

@@ -21,7 +21,7 @@ const Navigation = () => {
    const navigate = useNavigate()
 
    const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-   console.log(isMatch);
+   
 
    return (
       <React.Fragment>
@@ -57,7 +57,7 @@ const Navigation = () => {
                      </Button>
                      <Button sx={{ marginLeft: "10px" }} variant="contained"
                         onClick={() => navigate('/SignUp')}>
-                        SignUp
+                        Sign Up
                      </Button>
                   </>
                )}
