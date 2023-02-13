@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
    AppBar,
    Button,
@@ -43,20 +43,20 @@ const Navigation = () => {
                         textColor="inherit"
                         value={value}
                         onChange={(e, value) => setValue(value)}
-                        >
+                     >
                         {
                            pages.map((page, index) => (
-                              <Tab key={index} label={page.name} onClick={()=>navigate(page.link)} />
+                              <Tab key={index} label={page.name} onClick={() => navigate(page.link)} />
                            ))
                         }
-                        
+
                      </Tabs>
-                        <Button sx={{ marginLeft: "auto" }} variant="contained"
-                           onClick={() => navigate('/signin')}>
+                     <Button sx={{ marginLeft: "auto" }} variant="contained"
+                        onClick={() => navigate('/Signin')}>
                         Login
                      </Button>
-                        <Button sx={{ marginLeft: "10px" }} variant="contained"
-                        onClick={() => navigate('/signup')}>
+                     <Button sx={{ marginLeft: "10px" }} variant="contained"
+                        onClick={() => navigate('/SignUp')}>
                         SignUp
                      </Button>
                   </>

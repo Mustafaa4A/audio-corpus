@@ -37,7 +37,7 @@ const SignUp = () => {
                   alignItems: 'center',
                }}
             >
-                <img src="https://www.pngmart.com/files/3/Sign-Up-Button-PNG-Free-Download.png" alt="" srcset="" height="150px"/>
+               <img src="https://www.pngmart.com/files/3/Sign-Up-Button-PNG-Free-Download.png" alt="" srcset="" height="150px" />
                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                   <Grid container spacing={2}>
                      <Grid item xs={12} sm={6}>
@@ -82,7 +82,7 @@ const SignUp = () => {
                            autoComplete="new-password"
                         />
                      </Grid>
-                     
+
                   </Grid>
                   <Button
                      type="submit"
@@ -107,4 +107,4 @@ const SignUp = () => {
    );
 };
 
-export default SignIn;
+export default SignUp;
