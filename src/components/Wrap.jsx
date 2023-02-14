@@ -3,6 +3,7 @@ import { CssBaseline } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 import { Box } from '@mui/system';
+import Copyright from './Copyright';
 
 const theme = createTheme();
 
@@ -14,6 +15,7 @@ const Wrap = ({children}) => {
         <Box sx={{ marginTop: 10}}>
            { children}
         </Box>
+        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   )

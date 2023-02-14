@@ -37,7 +37,7 @@ const SignUp = () => {
                   alignItems: 'center',
                }}
             >
-               <img src="https://www.pngmart.com/files/3/Sign-Up-Button-PNG-Free-Download.png" alt="" srcset="" height="150px" />
+               <h1>SIGN UP</h1>
                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                   <Grid container spacing={2}>
                      <Grid item xs={12} sm={6}>

@@ -9,6 +9,7 @@ import SignUp from "./pages/SignUp";
 import Copyright from "./components/Copyright";
 import "./index.css";
 import Dataset from "./pages/Dataset";
+import TextDataset from "./pages/TextDataset";
 const App = () => {
   return (
     <div>
@@ -19,12 +20,14 @@ const App = () => {
           <Route path="/contribute" element={<Contribute />} />
           <Route path="/aboutus" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/dataset" element={<Dataset />} />
+          <Route path="/dataset" element={<Dataset />}/>
+          <Route path="dataset/text" element={<TextDataset />} />
+          <Route path="dataset/audio" element={<Contact />} />
         </Route>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
       </Routes>
-       <Copyright sx={{ mt: 5 }} />
+       
     </div>
 
   )

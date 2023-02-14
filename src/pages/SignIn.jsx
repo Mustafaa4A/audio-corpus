@@ -9,6 +9,9 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
+import { Google } from '@mui/icons-material';
+import { Grid } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 
 const theme = createTheme();
@@ -35,7 +38,7 @@ const SignIn = () => {
                   alignItems: 'center',
                }}
             >
-               <img src="https://www.pngmart.com/files/3/Sign-Up-Button-PNG-Free-Download.png" alt="" srcset="" height="150px" />
+               <h1>Login</h1>
                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                   <TextField
                      margin="normal"
@@ -65,10 +68,27 @@ const SignIn = () => {
                      type="submit"
                      fullWidth
                      variant="contained"
-                     sx={{ mt: 3, mb: 2, p: 1, fontSize: '20px', borderRadius: '30px' }}
+                     sx={{ mt: 3, mb: 1, p: 1, fontSize: '20px', borderRadius: '30px' }}
                   >
                      Sign In
                   </Button>
+                  <Grid container justifyContent="flex-end">
+                     <Grid item>
+                        <Link to="/signup">
+                           Don't have an account?
+                        </Link>
+                     </Grid>
+                  </Grid>
+                  {/* <Button
+                     startIcon={<Google/>}
+                     fullWidth
+                     variant="contained"
+                     color='error'
+                     sx={{ mt: 3, mb: 2, p: 1, fontSize: '20px', borderRadius: '30px',opacity:0.9 }}
+                  >
+                     <span sx={{pr:3}}>  Sign In google</span>
+                   
+                  </Button> */}
                   
                </Box>
             </Box>
