@@ -12,6 +12,10 @@ const pages = [
     link: "/dataset"
   },
   {
+    name: "Users",
+    link: "/users"
+  },
+  {
     name: "About Us",
     link: "/aboutus"
   },

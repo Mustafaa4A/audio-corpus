@@ -1,5 +1,4 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
+import  React, {useState} from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -8,21 +7,64 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import SignIn from './SignIn';
 import Copyright from '../components/Copyright';
 import { Link } from 'react-router-dom';
-
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '../utils/firebase-config';
+import { addDoc, collection } from 'firebase/firestore';
 
 const theme = createTheme();
 
 const SignUp = () => {
-   const handleSubmit = (event) => {
+   const [message, setMessage] = useState();
+   const usersCollectionRef = collection(db, 'users');
+
+   const saveUser = async (user) => {
+      await addDoc(usersCollectionRef, {...user, roll:'user', createdAt:new Date()})
+   }
+
+   const handleSubmit = async (event) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      console.log({
-         email: data.get('email'),
-         password: data.get('password'),
-      });
+
+
+      const displayName = data.get('firstName') + ' ' + data.get('lastName');
+      const email = data.get('email');
+      const password = data.get('password');
+      const confirmPassword = data.get('confirmPassword');
+
+      if (!displayName || !password || !email || !confirmPassword) {
+         setMessage("Fill the required fields");
+         return;
+      }
+
+      if (password !== confirmPassword) {
+         setMessage("Password Does Not Match");
+         return;
+      }
+
+      try {
+         const user = await createUserWithEmailAndPassword(auth, email, password);
+         await saveUser({ displayName, email });
+         console.log(user);
+      } catch (error) {
+         if (error.code === "auth/invalid-email") {
+            setMessage("Invalid email");
+            return;
+         }
+
+         if (error.code === "auth/email-already-in-use") {
+            setMessage("Email has already in use");
+            return;
+         }
+
+         if (error.code === "auth/weak-password") {
+            setMessage("Password should be at least 6 characters");
+            return;
+         }
+
+         setMessage("An error occured");
+      }
    };
 
    return (
@@ -37,7 +79,12 @@ const SignUp = () => {
                   alignItems: 'center',
                }}
             >
-               <h1>SIGN UP</h1>
+               <Box >
+                  <Typography sx={{textAlign:'center'}} variant='h4'>SIGN UP</Typography>
+                  <Typography sx={{ textAlign: 'center', color: 'red', mt:4, fontSize:'1.3em' }} >
+                     {message && message}
+                  </Typography>
+               </Box>
                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                   <Grid container spacing={2}>
                      <Grid item xs={12} sm={6}>
@@ -82,7 +129,16 @@ const SignUp = () => {
                            autoComplete="new-password"
                         />
                      </Grid>
-
+                     <Grid item xs={12}>
+                        <TextField
+                           required
+                           fullWidth
+                           name="confirmPassword"
+                           label="confirm Password"
+                           type="password"
+                           id="confirmPassword"
+                        />
+                     </Grid>
                   </Grid>
                   <Button
                      type="submit"

@@ -10,6 +10,7 @@ import Copyright from "./components/Copyright";
 import "./index.css";
 import Dataset from "./pages/Dataset";
 import TextDataset from "./pages/TextDataset";
+import Users from "./pages/Users";
 const App = () => {
   return (
     <div>
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/dataset" element={<Dataset />}/>
           <Route path="dataset/text" element={<TextDataset />} />
           <Route path="dataset/audio" element={<Contact />} />
+          <Route path="/users" element={<Users />}/>
         </Route>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />

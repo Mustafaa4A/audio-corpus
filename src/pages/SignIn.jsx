@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -10,20 +10,55 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
 import { Google } from '@mui/icons-material';
-import { Grid } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Grid, Typography } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../utils/firebase-config';
 
 
 const theme = createTheme();
 
 const SignIn = () => {
-   const handleSubmit = (event) => {
+   const [message, setMessage] = useState();
+   const navigate = useNavigate();
+
+   const handleSubmit = async (event) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      console.log({
-         email: data.get('email'),
-         password: data.get('password'),
-      });
+      const email = data.get('email');
+      const password = data.get('password');
+
+      if (!password || !email) {
+         setMessage("Fill the required fields");
+         return;
+      }
+
+      try {
+         await signInWithEmailAndPassword(auth, email, password);
+         navigate('/');
+      } catch (error) {
+         if (error.code === "auth/user-not-found") {
+            setMessage("User not found");
+            return;
+         }
+
+         if (error.code === "auth/wrong-password") {
+            setMessage("Worng password");
+            return;
+         }
+
+         if (error.code === "auth/network-request-failed") {
+            setMessage("Network Failed");
+            return;
+         }
+
+         if (error.code === "auth/too-many-requests") {
+            setMessage("Too may requests");
+            return;
+         }
+
+         setMessage("Error Ocurred");
+      }
    };
 
    return (
@@ -38,7 +73,12 @@ const SignIn = () => {
                   alignItems: 'center',
                }}
             >
-               <h1>Login</h1>
+               <Box >
+                  <Typography sx={{textAlign:'center'}} variant='h4'>SIGN UP</Typography>
+                  <Typography sx={{ textAlign: 'center', color: 'red', mt:4, fontSize:'1.3em' }} >
+                     {message && message}
+                  </Typography>
+               </Box>
                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                   <TextField
                      margin="normal"
