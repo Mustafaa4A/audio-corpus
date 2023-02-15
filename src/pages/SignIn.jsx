@@ -13,6 +13,7 @@ import { Grid, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../utils/firebase-config';
+import { useDispatch } from 'react-redux';
 
 
 const font = "'Work Sans', sans-serif";
@@ -26,6 +27,7 @@ const theme = createTheme({
 const SignIn = () => {
    const [message, setMessage] = useState();
    const navigate = useNavigate();
+   const dispatch = useDispatch();
 
    const handleSubmit = async (event) => {
       event.preventDefault();
@@ -40,7 +42,8 @@ const SignIn = () => {
 
       try {
          await signInWithEmailAndPassword(auth, email, password);
-         navigate('/');
+         // navigate('/');
+         console.log(auth);
       } catch (error) {
          if (error.code === "auth/user-not-found") {
             setMessage("User not found");

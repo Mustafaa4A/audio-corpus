@@ -12,8 +12,10 @@ import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'fireb
 import { db, storage } from '../utils/firebase-config';
 import { ref, uploadBytes } from 'firebase/storage';
 import { Bars } from 'react-loader-spinner';
+import { useSelector } from 'react-redux';
 
 const Contribute = () => {
+  const [uploading, setUploading] = useState(true);
   const { startRecording, stopRecording, pauseRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
     video: false,
     audio: true,
@@ -30,7 +32,8 @@ const Contribute = () => {
 
   const transCollectionRef = collection(db, "transcriptions");
   const metadataCollectionRef = collection(db, "metadata");
-  // const 
+  
+  const user = useSelector(auth => auth.user);
 
   const handleModel = () => {
     setOpen(prev => !prev);
@@ -77,9 +80,9 @@ const Contribute = () => {
     const trans = {
       sequence_id: text.sequence_id,
       transcription: text.transcription,
-      person: null,
+      person: user.displayName,
       audio_name: text.sequence_id,
-      audio_path: `waves/${text.sequence_id}`,
+      audio_path: `waves/${text.sequence_id}.wav`,
       duration_in_seconds:audiRef.current.duration,
       createdAt: Date.now()
     } 

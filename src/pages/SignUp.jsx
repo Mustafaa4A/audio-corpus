@@ -8,10 +8,12 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../utils/firebase-config';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import { useDispatch } from 'react-redux';
+import {login} from '../store/reducer'
 
 const font = "'Work Sans', sans-serif";
 
@@ -23,18 +25,23 @@ const theme = createTheme({
 
 
 const SignUp = () => {
+   const dispatch = useDispatch();
+   const navigate = useNavigate();
    const [message, setMessage] = useState();
    const usersCollectionRef = collection(db, 'users');
 
    const saveUser = async (user) => {
-      await addDoc(usersCollectionRef, {...user, roll:'user', createdAt:new Date()})
+      console.log("hhhhhhhhh");
+      try {
+         return await addDoc(usersCollectionRef, {...user, roll:'user', createdAt:new Date()})
+      } catch (error) {
+         console.log(error.message);
+      }
    }
 
    const handleSubmit = async (event) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-
-
       const displayName = data.get('firstName') + ' ' + data.get('lastName');
       const email = data.get('email');
       const password = data.get('password');
@@ -51,9 +58,12 @@ const SignUp = () => {
       }
 
       try {
-         const user = await createUserWithEmailAndPassword(auth, email, password);
-         await saveUser({ displayName, email });
-         console.log(user);
+         // const user = await createUserWithEmailAndPassword(auth, email, password);
+         const r = await saveUser({ displayName, email });
+         const user = await getDoc(doc(db, 'users', r.id));
+         dispatch(login(user.data()))
+         navigate('/');
+         return;
       } catch (error) {
          if (error.code === "auth/invalid-email") {
             setMessage("Invalid email");
