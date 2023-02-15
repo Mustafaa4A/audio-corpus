@@ -13,7 +13,14 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../utils/firebase-config';
 import { addDoc, collection } from 'firebase/firestore';
 
-const theme = createTheme();
+const font = "'Work Sans', sans-serif";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: font,
+  }
+});
+
 
 const SignUp = () => {
    const [message, setMessage] = useState();

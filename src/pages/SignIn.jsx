@@ -9,14 +9,19 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
-import { Google } from '@mui/icons-material';
 import { Grid, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../utils/firebase-config';
 
 
-const theme = createTheme();
+const font = "'Work Sans', sans-serif";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: font,
+  }
+});
 
 const SignIn = () => {
    const [message, setMessage] = useState();

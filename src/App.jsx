@@ -1,20 +1,23 @@
 import { Route, Routes } from "react-router-dom";
 import Navigation from "./components/Navigation";
-import Home from './pages/Home';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Contribute from './pages/Contribute';
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import Copyright from "./components/Copyright";
 import "./index.css";
-import Dataset from "./pages/Dataset";
-import TextDataset from "./pages/TextDataset";
-import Users from "./pages/Users";
+import { lazy, Suspense } from "react";
+import Loading from "./components/Loading";
+
+const Home = lazy(() => import('./pages/Home'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const SignIn = lazy(() => import('./pages/SignIn'));
+const SignUp = lazy(() => import('./pages/SignUp'));
+const Dataset = lazy(() => import('./pages/Dataset'));
+const TextDataset = lazy(() => import('./pages/TextDataset'));
+const AudioDataset = lazy(() => import('./pages/AudioDataset'));
+const Users = lazy(() => import('./pages/Users'));
+const Contribute = lazy(() => import('./pages/Contribute'));
+
 const App = () => {
   return (
-    <div>
-      
+    <Suspense fallback={<Loading />}>
       <Routes>
         <Route path="/" element={<Navigation />} >
           <Route index element={<Home />} />
@@ -23,15 +26,13 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/dataset" element={<Dataset />}/>
           <Route path="dataset/text" element={<TextDataset />} />
-          <Route path="dataset/audio" element={<Contact />} />
+          <Route path="dataset/audio" element={<AudioDataset />} />
           <Route path="/users" element={<Users />}/>
         </Route>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/Signup" element={<SignUp />} />
       </Routes>
-       
-    </div>
-
+    </Suspense>
   )
 }
 

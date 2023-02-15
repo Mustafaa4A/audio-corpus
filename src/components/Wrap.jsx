@@ -5,7 +5,17 @@ import Container from '@mui/material/Container';
 import { Box } from '@mui/system';
 import Copyright from './Copyright';
 
-const theme = createTheme();
+const font = "'Work Sans', sans-serif";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: font,
+  },
+  button: {
+    fontFamily: font,
+  }
+});
+
 
 const Wrap = ({children}) => {
   return (

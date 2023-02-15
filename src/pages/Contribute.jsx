@@ -11,6 +11,7 @@ import Image from '../assets/bgimage.avif';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../utils/firebase-config';
 import { ref, uploadBytes } from 'firebase/storage';
+import { Bars } from 'react-loader-spinner';
 
 const Contribute = () => {
   const { startRecording, stopRecording, pauseRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
@@ -45,6 +46,7 @@ const Contribute = () => {
     pauseRecording();
     stopRecording();
     setRecording(prev => !prev);
+    console.log(mediaBlobUrl);
   };
 
   const playAudio = () => {
@@ -146,7 +148,8 @@ const Contribute = () => {
         sx={{
           background: `url(${Image})`,
           backgroundSize: 'cover',
-          backgroundRepeat:'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          overflowY:'scroll'
         }}
       >
         <>
@@ -172,7 +175,13 @@ const Contribute = () => {
               )
             }
             
-            <TextDisplay> { text?.transcription } </TextDisplay>
+            <TextDisplay> {text?.transcription} </TextDisplay>
+            <Box sx={{
+              position: 'absolute',
+              top: 15,
+            }} hidden={(!recording)}>
+              <Bars color='#fa4bf4'/>
+            </Box>
             {
               (!mediaBlobUrl) ? (
                 (!recording) ? (
@@ -235,6 +244,7 @@ const Contribute = () => {
             <CustomBtn onClick={submit} disabled={!mediaBlobUrl}>
               Submit
             </CustomBtn>
+            
           </Box>
         </>
       </Modal>
