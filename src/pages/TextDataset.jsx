@@ -41,7 +41,9 @@ const TextDataset = () => {
             const element = item[j].trim();
             obj[column] = element;
           }
+          if (obj.id || obj.text) {
             objDate.push(obj);
+          }
         }
         setRows(objDate);
       };
@@ -54,7 +56,7 @@ const TextDataset = () => {
     console.log(rows[0]);
     try {
       for (const item of rows) {
-        await addDoc(transCollectionRef, { id: item.id, transcription: item.text, recorded: false });
+        await addDoc(transCollectionRef, { sequence_id: item.id, transcription: item.text, recorded: false });
         setFile(null);
         setRows([]);
       }
