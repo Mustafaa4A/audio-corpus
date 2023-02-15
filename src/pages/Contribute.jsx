@@ -6,23 +6,29 @@ import useSound from 'use-sound';
 import AudioControl from '../components/AudioControl'
 import BackArrow from '../components/BackArrow';
 import CustomBtn from '../components/CustomBtn';
-import TextDisplay from '../components/TextDisplay'
-import Wrap from '../components/Wrap'
-import data from '../data';
+import TextDisplay from '../components/TextDisplay';
+import Wrap from '../components/Wrap';
+import Image from '../assets/bgimage.avif';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../utils/firebase-config';
 
 const Contribute = () => {
   const { startRecording, stopRecording, pauseRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
     video: false,
     audio: true,
-    echoCancellation: true
+    echoCancellation: true,
+    blobPropertyBag: { type: "audio/wav" }
   });
-  const [play, { stop }] = useSound(mediaBlobUrl);
-  const audio = new Audio(mediaBlobUrl);
+  const audiRef = useRef();
   const [recording, setRecording] = useState(false);
   const [playing, setPlaying] = useState(false);
 
   const [open, setOpen] = useState(false);
-  const [text, setText] = useState();
+  const [data, setData] = useState([]);
+  const [text, setText] = useState({});
+
+  const transCollectionRef = collection(db, "transcriptions");
+  // const 
 
   const handleModel = () => setOpen(prev => !prev);
   const start = () => {
@@ -38,12 +44,16 @@ const Contribute = () => {
 
   const playAudio = () => {
     setPlaying(true);
-    audio.play();
+    audiRef.current.play();
   }
 
   const pauseAudio = () => {
     setPlaying(false);
-    audio.pause();
+    audiRef.current.pause();
+  }
+
+  const onEndAudio = () => {
+    setPlaying(false);
   }
 
   const clear = () => {
@@ -51,14 +61,38 @@ const Contribute = () => {
     clearBlobUrl();
   }
 
+  const submitAudio = async () => {
+    const audioBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
+    const audiofile = new File([audioBlob], `${text.id}.wav`, {
+        type: "audio/wav",
+    });
+    
+    const formData = new FormData();
+    formData.append('transcription', text);
+    formData.append('audio', audiofile);
+    formData.append('person', null);
+    formData.append('createAt', Date.now());
+    console.log(Array.from(formData));
+  }
+
   const generateText = () => {
-    const id = parseInt(Math.random() * 10);
-    setText(data[1].text);
+    const index = parseInt(Math.random() * data.length);
+    setText({ id: data[index].id, transcription: data[index].transcription });
+    clearBlobUrl();
+    setRecording(false);
+    setPlaying(false);
   }
 
   useEffect(() => {
-    generateText();
-  },[])
+    const loadData = async () => {
+      const qu = await query(transCollectionRef, where("recorded", "==", false));
+      const docsRef = await getDocs(qu);
+      await setData(docsRef.docs.map((doc) => doc.data()));
+      await generateText();
+    }
+    loadData();
+  }, [])
+
 
   return (
     <Wrap>
@@ -72,7 +106,9 @@ const Contribute = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         sx={{
-          bgcolor: 'blur',
+          background: `url(${Image})`,
+          backgroundSize: 'cover',
+          backgroundRepeat:'no-repeat'
         }}
       >
         <>
@@ -98,7 +134,7 @@ const Contribute = () => {
               )
             }
             
-            <TextDisplay> { text } </TextDisplay>
+            <TextDisplay> { text?.transcription } </TextDisplay>
             {
               (!mediaBlobUrl) ? (
                 (!recording) ? (
@@ -144,6 +180,7 @@ const Contribute = () => {
               </Box>
               )
             }
+            <video src={mediaBlobUrl} ref={audiRef} onEnded={onEndAudio} hidden/>
           </Box>
 
           <Box sx={{
@@ -154,10 +191,10 @@ const Contribute = () => {
             },
             m: 3,
           }}>
-            <CustomBtn color='success' onClick={generateText}>
+            <CustomBtn disabled={mediaBlobUrl || recording}  color='success' onClick={generateText}>
               Skip  <KeyboardDoubleArrowRight />
            </CustomBtn>
-            <CustomBtn disabled={!mediaBlobUrl}>
+            <CustomBtn onClick={submitAudio} disabled={!mediaBlobUrl}>
               Submit
             </CustomBtn>
           </Box>

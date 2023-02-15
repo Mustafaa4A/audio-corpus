@@ -1,8 +1,9 @@
-import { FileUpload, Upload } from '@mui/icons-material';
+import { Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useState } from 'react'
-
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../utils/firebase-config';
 import Wrap from '../components/Wrap';
 
 const TextDataset = () => {
@@ -16,36 +17,51 @@ const TextDataset = () => {
   const [file, setFile] = useState();
   const fileReader = new FileReader();
 
+  const transCollectionRef = collection(db, "transcriptions");
+
   const handleOnChange = (e) => {
     setFile(e.target.files[0]);
   };
 
-  const handleOnSubmit = (e) => {
+  const readFile = (e) => {
     e.preventDefault();
     if (file) {
-        fileReader.onload = function (event) {
-          const data = event.target.result;
-          const buffer = data.toString();
-          const arr = buffer.split('\n');
-          const headers = ['id', 'text'];
+      fileReader.onload = function (event) {
+        const data = event.target.result;
+        const buffer = data.toString();
+        const arr = buffer.split('\n');
+        const headers = ['id', 'text'];
 
-          const objDate = [];
-          for (let i = 1; i < arr.length; i++) {
-            const item = arr[i].split(',');
-            let obj = {};
-            for (var j = 0; j < item.length; j++) {
-              const column = headers[j];
-              const element = item[j].trim();
-              obj[column] = element;
-            }
-             objDate.push(obj);
+        const objDate = [];
+        for (let i = 1; i < arr.length; i++) {
+          const item = arr[i].split(',');
+          let obj = {};
+          for (var j = 0; j < item.length; j++) {
+            const column = headers[j];
+            const element = item[j].trim();
+            obj[column] = element;
           }
-          setRows(objDate);
-        };
-        fileReader.readAsText(file);
-        setShow(true);
+            objDate.push(obj);
+        }
+        setRows(objDate);
+      };
+      fileReader.readAsText(file);
+      setShow(true);
     }
   };
+
+  const submitData = async () => {
+    console.log(rows[0]);
+    try {
+      for (const item of rows) {
+        await addDoc(transCollectionRef, { id: item.id, transcription: item.text, recorded: false });
+        setFile(null);
+        setRows([]);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
   return (
     <Wrap>
@@ -62,7 +78,7 @@ const TextDataset = () => {
           <Upload />
           Upload
         </Button>
-        <Button disabled={!file?true:false} variant='contained' onClick={handleOnSubmit} sx={{m:2}}>
+        <Button disabled={!file?true:false} variant='contained' onClick={readFile} sx={{m:2}}>
           Display
         </Button>
      </form>
@@ -93,7 +109,7 @@ const TextDataset = () => {
           )
         }
       </Box>
-      <Button disabled={!file?true:false} color='success' variant='contained' onClick={()=>{}}
+      <Button disabled={!file?true:false} color='success' variant='contained' onClick={submitData}
       sx={{
         display:'block',
         px:12,
