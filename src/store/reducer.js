@@ -4,7 +4,72 @@ const initialState = {
   isLogin: false,
   user: null,
   roll: null,
+  pages: ['Ali']
 }
+
+const generatePage = (user) => {
+  if (!user) return (
+    [
+      {
+        name: "Home",
+        link: "/"
+      },
+      {
+        name: "About Us",
+        link: "/aboutus"
+      },
+      {
+        name: "Contact",
+        link: "/contact"
+      }
+    ]
+  )
+  if (user.roll === 'user') return (
+    [
+      {
+        name: "Home",
+        link: "/"
+      },
+      {
+        name: "Contribute",
+        link: "/contribute"
+      },
+      {
+        name: "About Us",
+        link: "/aboutus"
+      },
+      {
+        name: "Contact",
+        link: "/contact"
+      }
+    ]
+  )
+  else if (user.roll == 'admin') return (
+    [
+      {
+        name: "Home",
+        link: "/"
+      },
+      {
+        name: "Contribute",
+        link: "/contribute"
+      },
+      {
+        name: "Dataset",
+        link: "/dataset"
+      },
+      {
+        name: "About Us",
+        link: "/aboutus"
+      },
+      {
+        name: "Contact",
+        link: "/contact"
+      }
+    ]
+  ) 
+}
+
 
 
 const auth = createSlice({
@@ -15,14 +80,16 @@ const auth = createSlice({
       return {
         ...state,
         user: payload,
-        isLogin: true
+        isLogin: true,
+        // pages:generatePage(state.user)
       }
     },
     logout: (state, {payload}) => {
       return {
         ...state,
         user: null,
-        isLogin: false
+        isLogin: false,
+        // pages:generatePage(state.user)
       }
     }
   }

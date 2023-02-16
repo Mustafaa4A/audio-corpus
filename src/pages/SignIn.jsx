@@ -11,10 +11,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
 import { Grid, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../utils/firebase-config';
 import { useDispatch } from 'react-redux';
-
+import { getUser, signInUser } from '../utils/firebase-config';
+import { login } from '../store/reducer';
+import Waiting from '../components/Waiting';
 
 const font = "'Work Sans', sans-serif";
 
@@ -25,11 +25,13 @@ const theme = createTheme({
 });
 
 const SignIn = () => {
+   const [loading, setLoading] = useState(false);
    const [message, setMessage] = useState();
    const navigate = useNavigate();
    const dispatch = useDispatch();
 
    const handleSubmit = async (event) => {
+      setLoading(true);
       event.preventDefault();
       const data = new FormData(event.currentTarget);
       const email = data.get('email');
@@ -41,31 +43,38 @@ const SignIn = () => {
       }
 
       try {
-         await signInWithEmailAndPassword(auth, email, password);
-         // navigate('/');
-         console.log(auth);
+         const { user } = await signInUser(email, password);
+         const userElement = await getUser(user);
+         dispatch(login(userElement));
+         setLoading(false);
+         return;
       } catch (error) {
          if (error.code === "auth/user-not-found") {
             setMessage("User not found");
+            setLoading(false);
             return;
          }
 
          if (error.code === "auth/wrong-password") {
             setMessage("Worng password");
+            setLoading(false);
             return;
          }
 
          if (error.code === "auth/network-request-failed") {
             setMessage("Network Failed");
+            setLoading(false);
             return;
          }
 
          if (error.code === "auth/too-many-requests") {
             setMessage("Too may requests");
+            setLoading(false);
             return;
          }
 
          setMessage("Error Ocurred");
+         setLoading(false);
       }
    };
 
@@ -81,6 +90,7 @@ const SignIn = () => {
                   alignItems: 'center',
                }}
             >
+               { loading && <Waiting /> }
                <Box >
                   <Typography sx={{textAlign:'center'}} variant='h4'>SIGN UP</Typography>
                   <Typography sx={{ textAlign: 'center', color: 'red', mt:4, fontSize:'1.3em' }} >

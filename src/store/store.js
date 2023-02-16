@@ -11,7 +11,8 @@ const persistConfig = {
 const persistedReducer = persistReducer(persistConfig, reducer);
 
 const store = configureStore({
-  reducer:persistedReducer
+  reducer: persistedReducer,
+  middleware: []
 })
 
 export default store;

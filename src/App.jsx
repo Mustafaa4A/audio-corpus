@@ -19,7 +19,7 @@ const Contribute = lazy(() => import('./pages/Contribute'));
 const App = () => {
   const user = useSelector(auth => auth.user);
   const isLogin = useSelector(auth => auth.isLogin);
-  
+  console.log(useSelector(auth=>auth));
   useEffect(() => {
     console.log(isLogin);
     console.log(user);
@@ -33,18 +33,18 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/aboutus" element={<About />} />
           <Route path="/contribute"
-             element={isLogin ? (<Contribute />) : (<Navigate replace to='/signin' />)}
+             element={isLogin ? (<Contribute />) : (<Navigate replace to='/contribute' />)}
           />
           <Route path="/dataset"
-            element={(isLogin && user.roll==='admin')  ? (<Dataset />) :
+            element={(isLogin && user?.roll==='admin')  ? (<Dataset />) :
               (<Navigate replace to='/signin' />)}
           />
           <Route path="dataset/text"
-            element={(isLogin && user.roll === 'admin') ? (<TextDataset />) :
+            element={(isLogin && user?.roll === 'admin') ? (<TextDataset />) :
               (<Navigate replace to='/signin' />)}
           />
           <Route path="dataset/audio"
-            element={(isLogin && user.roll==='admin')  ? (<AudioDataset />) :
+            element={(isLogin && user?.roll==='admin')  ? (<AudioDataset />) :
               (<Navigate replace to='/signin' />)}
           />
           <Route path="/users" element={<Users />}/>

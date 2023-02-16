@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from "firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getFirestore, getDoc, setDoc } from "firebase/firestore";
 import { getStorage} from 'firebase/storage';
 
 const firebaseConfig = {
@@ -23,3 +23,51 @@ export const auth = getAuth(app);
 export const db = getFirestore();
 
 export const storage = getStorage(app);
+
+
+//creating user from email and password
+export const SignUpUser = async (email, password) => {
+  if (!email || !password) return;
+  return createUserWithEmailAndPassword(auth, email, password);
+};
+
+
+//signin with email and password
+export const signInUser = async (email, password) => {
+  if (!email || !password) return;
+  return await signInWithEmailAndPassword(auth, email, password);
+};
+
+//creating user from auth provider
+export const saveUser = async (userAuth, otherData) => {
+  const userDoc = await doc(db, "users", userAuth.uid);
+
+  const userElement = await getDoc(userDoc);
+
+  if (!userElement.exists()) {
+    //
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+
+    try {
+      await setDoc(userDoc, {
+        displayName,
+        email,
+        createdAt,
+        ...otherData,
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  return userDoc;
+};
+
+// genUser
+export const getUser = async (userAuth) => {
+  const userDoc = await doc(db, "users", userAuth.uid);
+  const user = await getDoc(userDoc);
+
+  return user.data();
+}

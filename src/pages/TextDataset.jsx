@@ -56,7 +56,8 @@ const TextDataset = () => {
     console.log(rows[0]);
     try {
       for (const item of rows) {
-        await addDoc(transCollectionRef, { sequence_id: item.id, transcription: item.text, recorded: false });
+        await addDoc(transCollectionRef,
+          { sequence_id: item.id, transcription: item.text, recorded: false });
         setFile(null);
         setRows([]);
       }

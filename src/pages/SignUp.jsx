@@ -9,11 +9,10 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
 import { Link, useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../utils/firebase-config';
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import { SignUpUser, saveUser, getUser } from '../utils/firebase-config';
 import { useDispatch } from 'react-redux';
 import {login} from '../store/reducer'
+import Waiting from '../components/Waiting';
 
 const font = "'Work Sans', sans-serif";
 
@@ -28,18 +27,10 @@ const SignUp = () => {
    const dispatch = useDispatch();
    const navigate = useNavigate();
    const [message, setMessage] = useState();
-   const usersCollectionRef = collection(db, 'users');
-
-   const saveUser = async (user) => {
-      console.log("hhhhhhhhh");
-      try {
-         return await addDoc(usersCollectionRef, {...user, roll:'user', createdAt:new Date()})
-      } catch (error) {
-         console.log(error.message);
-      }
-   }
+   const [loading, setLoading] = useState(false);
 
    const handleSubmit = async (event) => {
+      setLoading(true);
       event.preventDefault();
       const data = new FormData(event.currentTarget);
       const displayName = data.get('firstName') + ' ' + data.get('lastName');
@@ -54,33 +45,39 @@ const SignUp = () => {
 
       if (password !== confirmPassword) {
          setMessage("Password Does Not Match");
+         setLoading(false);
          return;
       }
 
       try {
-         // const user = await createUserWithEmailAndPassword(auth, email, password);
-         const r = await saveUser({ displayName, email });
-         const user = await getDoc(doc(db, 'users', r.id));
-         dispatch(login(user.data()))
+         const { user } = await SignUpUser(email, password);
+         await saveUser(user, { displayName, roll: 'user' });
+         const userElement = await getUser(user);
+         dispatch(login(userElement))
+         setLoading(false);
          navigate('/');
          return;
       } catch (error) {
          if (error.code === "auth/invalid-email") {
             setMessage("Invalid email");
+            setLoading(false);
             return;
          }
 
          if (error.code === "auth/email-already-in-use") {
             setMessage("Email has already in use");
+            setLoading(false);
             return;
          }
 
          if (error.code === "auth/weak-password") {
             setMessage("Password should be at least 6 characters");
+            setLoading(false);
             return;
          }
 
          setMessage("An error occured");
+         setLoading(false);
       }
    };
 
@@ -96,6 +93,7 @@ const SignUp = () => {
                   alignItems: 'center',
                }}
             >
+               { loading && <Waiting /> }
                <Box >
                   <Typography sx={{textAlign:'center'}} variant='h4'>SIGN UP</Typography>
                   <Typography sx={{ textAlign: 'center', color: 'red', mt:4, fontSize:'1.3em' }} >

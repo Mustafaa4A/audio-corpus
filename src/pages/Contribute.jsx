@@ -11,11 +11,12 @@ import Image from '../assets/bgimage.avif';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../utils/firebase-config';
 import { ref, uploadBytes } from 'firebase/storage';
-import { Bars } from 'react-loader-spinner';
+import { Bars, TailSpin } from 'react-loader-spinner';
 import { useSelector } from 'react-redux';
+import Waiting from '../components/Waiting';
 
 const Contribute = () => {
-  const [uploading, setUploading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const { startRecording, stopRecording, pauseRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
     video: false,
     audio: true,
@@ -49,7 +50,6 @@ const Contribute = () => {
     pauseRecording();
     stopRecording();
     setRecording(prev => !prev);
-    console.log(mediaBlobUrl);
   };
 
   const playAudio = () => {
@@ -72,6 +72,7 @@ const Contribute = () => {
   }
 
   const submit = async () => {
+    setUploading(true);
     const audioBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
     const audiofile = new File([audioBlob], `${text.sequence_id}.wav`, {
         type: "audio/wav",
@@ -92,7 +93,7 @@ const Contribute = () => {
       await addDoc(metadataCollectionRef, trans);
       await updateTrans(text.id);
       generateText();
-      alert("Uploaded")
+      setUploading(false);
     });
   }
 
@@ -131,12 +132,6 @@ const Contribute = () => {
     loadData();
   }, [])
 
-  useEffect(() => {
-    if (data) {
-      
-    }
-  }, [data]);
-
   return (
     <Wrap>
       <Box>
@@ -156,6 +151,9 @@ const Contribute = () => {
         }}
       >
         <>
+          {uploading && (
+            <Waiting />
+          )}
           <BackArrow onClick={ handleModel } />
           <Box sx={{
             display: 'flex',
