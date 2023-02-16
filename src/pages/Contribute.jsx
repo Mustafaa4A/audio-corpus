@@ -14,6 +14,7 @@ import { ref, uploadBytes } from 'firebase/storage';
 import { Bars, TailSpin } from 'react-loader-spinner';
 import { useSelector } from 'react-redux';
 import Waiting from '../components/Waiting';
+import { getStream } from '../utils/media_permission';
 
 const Contribute = () => {
   const [uploading, setUploading] = useState(false);
@@ -21,7 +22,8 @@ const Contribute = () => {
     video: false,
     audio: true,
     echoCancellation: true,
-    blobPropertyBag: { type: "audio/wav" }
+    blobPropertyBag: { type: "audio/wav" },
+    askPermissionOnMount:true
   });
   const audiRef = useRef();
   const [recording, setRecording] = useState(false);
@@ -30,6 +32,7 @@ const Contribute = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [text, setText] = useState({});
+  const [audioAuth, setAudioAuth] = useState(false);
 
   const transCollectionRef = collection(db, "transcriptions");
   const metadataCollectionRef = collection(db, "metadata");
@@ -41,9 +44,14 @@ const Contribute = () => {
     generateText();
   };
   const start = () => {
-    startRecording();
-    setRecording(prev => !prev);
-
+    // getStream();
+    // navigator.mediaDevices.getUserMedia(()=>{});
+    navigator.permissions.query({ name: 'microphone' }).then(({ state }) => {
+        if (state === 'granted') {
+          startRecording();
+          setRecording(prev => !prev);
+        }
+    })
   };
 
   const stopRecord = () => {
@@ -132,6 +140,16 @@ const Contribute = () => {
     loadData();
   }, [])
 
+  // useEffect(() => {
+  //   if (!audioAuth) {
+  //     navigator.permissions.query({ name: 'microphone' }).then(({ state }) => {
+  //       if (state === 'granted') {
+  //         setAudioAuth(true);
+  //       }
+  //     })
+  //   }
+  // },[])
+
   return (
     <Wrap>
       <Box>
@@ -163,7 +181,6 @@ const Contribute = () => {
             pt: 12,
             px:2
           }}>
-
             {
               (!recording) ? (
               <Typography sx={{color:'white', fontSize:20}}>
@@ -176,7 +193,9 @@ const Contribute = () => {
               )
             }
             
-            <TextDisplay> {text?.transcription} </TextDisplay>
+            <TextDisplay> {!text ? text?.transcription : (
+              "No text"
+            )} </TextDisplay>
             <Box sx={{
               position: 'absolute',
               top: 15,

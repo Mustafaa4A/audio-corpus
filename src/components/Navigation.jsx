@@ -11,7 +11,7 @@ import {
    useMediaQuery,
    useTheme,
 } from "@mui/material";
-import { AddBusinessRounded } from "@mui/icons-material";
+import { AddBusinessRounded, SettingsVoice } from "@mui/icons-material";
 import DrawerComp from "./DrawerComp";
 import { useDispatch, useSelector } from "react-redux";
 import pages from "../utils/pages";
@@ -33,7 +33,7 @@ const Navigation = () => {
       <React.Fragment>
          <AppBar sx={{ background: "#063970" }}>
             <Toolbar>
-               <AddBusinessRounded sx={{ transform: "scale(2)" }} />
+               <SettingsVoice sx={{ fontSize: 40, }} onClick={ ()=>navigate('/')} />
                {isMatch ? (
                   <>
                      <Typography sx={{ fontSize: "2rem", paddingLeft: "10%" }}>
@@ -50,11 +50,17 @@ const Navigation = () => {
                         value={value}
                         onChange={(e, value) => setValue(value)}
                      >
+                           
+                        <Tab label='Home' onClick={() => navigate('/')} /> 
                         {
-                           pages.map((page, index) => (
-                              <Tab key={index} label={page.name} onClick={() => navigate(page.link)} />
-                           ))
+                           isLogin &&  <Tab label='Contribute' onClick={() => navigate('/contribute')} />
                         }
+                        {
+                              (isLogin && user?.roll == 'admin') &&
+                              <Tab label='Dataset' onClick={() => navigate('/dataset')} />
+                        }
+                        <Tab label='About Us' onClick={() => navigate('/aboutus')} />
+                        <Tab label='Contact' onClick={() => navigate('/contact')} />
 
                      </Tabs>
                         {

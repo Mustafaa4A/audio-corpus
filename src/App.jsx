@@ -33,7 +33,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/aboutus" element={<About />} />
           <Route path="/contribute"
-             element={isLogin ? (<Contribute />) : (<Navigate replace to='/contribute' />)}
+             element={isLogin ? (<Contribute />) : (<Navigate replace to='/' />)}
           />
           <Route path="/dataset"
             element={(isLogin && user?.roll==='admin')  ? (<Dataset />) :
