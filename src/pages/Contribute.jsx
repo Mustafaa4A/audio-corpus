@@ -11,10 +11,9 @@ import Image from '../assets/bgimage.avif';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../utils/firebase-config';
 import { ref, uploadBytes } from 'firebase/storage';
-import { Bars, TailSpin } from 'react-loader-spinner';
+import { Bars } from 'react-loader-spinner';
 import { useSelector } from 'react-redux';
 import Waiting from '../components/Waiting';
-import { getStream } from '../utils/media_permission';
 
 const Contribute = () => {
   const [uploading, setUploading] = useState(false);
@@ -32,7 +31,6 @@ const Contribute = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [text, setText] = useState({});
-  const [audioAuth, setAudioAuth] = useState(false);
 
   const transCollectionRef = collection(db, "transcriptions");
   const metadataCollectionRef = collection(db, "metadata");
@@ -43,9 +41,7 @@ const Contribute = () => {
     setOpen(prev => !prev);
     generateText();
   };
-  const start = () => {
-    // getStream();
-    // navigator.mediaDevices.getUserMedia(()=>{});
+  const start = async () => {
     navigator.permissions.query({ name: 'microphone' }).then(({ state }) => {
         if (state === 'granted') {
           startRecording();
@@ -118,9 +114,9 @@ const Contribute = () => {
   const generateText = () => {
     const index = parseInt(Math.random() * data.length);
     setText({
-      id: data[index].id,
-      sequence_id: data[index].sequence_id, 
-      transcription: data[index].transcription
+      id: data[index]?.id,
+      sequence_id: data[index]?.sequence_id, 
+      transcription: data[index]?.transcription
     });
     reset();
   }
@@ -140,20 +136,10 @@ const Contribute = () => {
     loadData();
   }, [])
 
-  // useEffect(() => {
-  //   if (!audioAuth) {
-  //     navigator.permissions.query({ name: 'microphone' }).then(({ state }) => {
-  //       if (state === 'granted') {
-  //         setAudioAuth(true);
-  //       }
-  //     })
-  //   }
-  // },[])
-
   return (
     <Wrap>
       <Box>
-        <Button onClick={handleModel}>Open modal</Button>
+  <Button onClick={handleModel}>Open modal</Button>
       </Box>
       
       <Modal
@@ -193,7 +179,7 @@ const Contribute = () => {
               )
             }
             
-            <TextDisplay> {!text ? text?.transcription : (
+            <TextDisplay> {text ? text?.transcription : (
               "No text"
             )} </TextDisplay>
             <Box sx={{
