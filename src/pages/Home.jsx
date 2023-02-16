@@ -5,7 +5,8 @@ import React from 'react'
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Copyright from '../components/Copyright';
-import Wrap from '../components/Wrap'
+import Wrap from '../components/Wrap';
+import bg from '../assets/bg.mp4';
 
 const font = "'Work Sans', sans-serif";
 
@@ -17,7 +18,6 @@ const theme = createTheme({
     fontFamily: font,
   }
 });
-const url = 'https://vod-progressive.akamaized.net/exp=1676562360~acl=%2Fvimeo-prod-skyfire-std-us%2F01%2F4314%2F14%2F371571670%2F1542711483.mp4~hmac=0cbe19456d362fdf6ede5ae6f6df4b39e5e25038a148da77ac20e4ede32405ba/vimeo-prod-skyfire-std-us/01/4314/14/371571670/1542711483.mp4';
  
 const Home = () => {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const Home = () => {
             height: '100vh',
             zIndex: '-99',
           }}
-          autoPlay loop muted src={url} />
+          autoPlay loop muted src={bg} />
         
         <Box
           sx={{

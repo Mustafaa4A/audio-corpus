@@ -7,17 +7,18 @@ const BackArrow = ({onClick}) => {
     <Box
       sx={{
       backgroundColor: 'white',
-      mt: 4,
-      boxShadow: 5,
-      width: '60px',
-      height: '60px',
-      borderRadius: '50%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
+        mt: 2,
+        ml:2,
+        boxShadow: 5,
+        width: '60px',
+        height: '60px',
+        borderRadius: '50%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         cursor: 'pointer',
-      position:"absolute"
+        position:"absolute"
       }}
       onClick={onClick}
     >
