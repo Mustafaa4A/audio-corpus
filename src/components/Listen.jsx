@@ -1,18 +1,22 @@
 import { Check, Clear, KeyboardVoice, PlayArrow, Stop } from '@mui/icons-material'
-import { Box } from '@mui/material'
-import { doc, updateDoc } from 'firebase/firestore'
+import { Box, Typography } from '@mui/material'
+import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 import React, { useEffect, useRef, useState } from 'react'
+import { LineWave } from 'react-loader-spinner'
 import { db } from '../utils/firebase-config'
 import AudioControl from './AudioControl'
 import BackArrow from './BackArrow'
 import TextDisplay from './TextDisplay'
 import Waiting from './Waiting'
 
-const Listen = ({ onClose, data }) => {
+const Listen = ({ onClose }) => {
   const [playing, setPlaying] = useState(false);
   const audiRef = useRef();
   const [processing, setProcessing] = useState(false);
   const [transcription, setTranscriptions] = useState();
+  const [data, setData] = useState([]);
+
+  const AudioTansCollectionRef = collection(db, "metadata");
 
   const playAudio = () => {
     setPlaying(true);
@@ -39,7 +43,7 @@ const Listen = ({ onClose, data }) => {
     try {
       const document = await doc(db, 'metadata', id);
       await updateDoc(document, { verified: status });
-      generateTrans();
+      loadData();
       setProcessing(false);
     } catch (error) {
       console.log(error.message);
@@ -47,9 +51,19 @@ const Listen = ({ onClose, data }) => {
     }
   }
 
+  const loadData = async () => {
+    const qu = await query(AudioTansCollectionRef, where("verified", "==", "unverified"));
+    const docsRef = await getDocs(qu);
+    await setData(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id }))); 
+  }
+
+  useEffect(() => {
+    loadData();
+  },[])
+
   useEffect(() => {
     generateTrans();
-  }, [])
+  }, [data])
  
 
 
@@ -66,13 +80,13 @@ const Listen = ({ onClose, data }) => {
         px:2
       }}>
         {processing && <Waiting />}
-        <TextDisplay> 
-          {transcription ? (
-            transcription.transcription 
-          ): (
-              "Sorry, Somethingn went wrong.. There is no text to listen"
-          )}
-        </TextDisplay>
+        <Typography variant='h6' color='white' pb='2' >
+          Tap <PlayArrow sx={{  fontSize: 35,color:'#5bc0de' }} />to listen
+        </Typography>
+
+        
+        <TextDisplay> {transcription ? transcription?.transcription : (<LineWave />)} </TextDisplay>
+        
         <video src={transcription?.audio_url} ref={audiRef} onEnded={(onEndAudio)} hidden />
         
         <Box sx={{display:'flex', gap:4, mt:4}}>
@@ -99,7 +113,7 @@ const Listen = ({ onClose, data }) => {
                 </AudioControl>
             )
           }
-          <AudioControl disabled={playing} onClick={()=>submitVerify(transcription.id, 'error')}>
+          <AudioControl hidden onClick={()=>submitVerify(transcription.id, 'error')}>
             <Clear sx={{
               fontSize: 35,
               color:'#d9534f'

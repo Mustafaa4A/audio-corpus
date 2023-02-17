@@ -9,11 +9,11 @@ import TextDisplay from './TextDisplay';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../utils/firebase-config';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { Bars } from 'react-loader-spinner';
+import { Bars, LineWave } from 'react-loader-spinner';
 import { useSelector } from 'react-redux';
 import Waiting from './Waiting';
 
-const Speak = ({ onClose, data }) => {
+const Speak = ({ onClose }) => {
   const [uploading, setUploading] = useState(false);
   const { startRecording, stopRecording, pauseRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
     video: false,
@@ -26,9 +26,10 @@ const Speak = ({ onClose, data }) => {
   const [recording, setRecording] = useState(false);
   const [playing, setPlaying] = useState(false);
 
+  const [data, setData] = useState([]);
   const [text, setText] = useState({});
 
-  
+  const transCollectionRef = collection(db, "transcriptions");
   const metadataCollectionRef = collection(db, "metadata");
   
   const user = useSelector(auth => auth.user);
@@ -94,7 +95,7 @@ const Speak = ({ onClose, data }) => {
           trans.audio_url = url;
           await addDoc(metadataCollectionRef, trans);
           await updateTrans(text.id);
-          generateText();
+          loadData();
           setUploading(false);
         })
       })
@@ -125,10 +126,20 @@ const Speak = ({ onClose, data }) => {
     setPlaying(false);
   }
 
+  const loadData = async () => {
+    const qu = await query(transCollectionRef, where("recorded", "==", false));
+    const docsRef = await getDocs(qu);
+    await setData(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  }
+
+  useEffect(() => {
+    loadData();
+  }, [])
+
   useEffect(() => {
     generateText();
-  }, []);
-
+  }, [data])
+  
   return (
     <>
       {uploading && (
@@ -155,9 +166,7 @@ const Speak = ({ onClose, data }) => {
           )
         }
         
-        <TextDisplay> {text ? text?.transcription : (
-          "No text"
-        )} </TextDisplay>
+        <TextDisplay> { text ? text?.transcription:(<LineWave/>)} </TextDisplay>
         <Box sx={{
           position: 'absolute',
           top: 15,

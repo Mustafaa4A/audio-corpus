@@ -16,31 +16,9 @@ const Contribute = () => {
   const [audioTranscriptions, setAudioTranscriptions] = useState([]);
   
   const transCollectionRef = collection(db, "transcriptions");
-  const AudioTansCollectionRef = collection(db, "metadata");
 
   const handleSpeakModal = () => setOpenSpeakModal(prev => !prev);
   const handleListenModal = () => setOpenListenModal(prev => !prev);
-  
-    
-  useEffect(() => {
-    const loadData = async () => {
-      const qu = await query(transCollectionRef, where("recorded", "==", false));
-      const docsRef = await getDocs(qu);
-      await setTranscriptions(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      console.log(transcriptions);
-    }
-    loadData();
-  }, [])
-
-  useEffect(() => {
-      const loadData = async () => {
-      const qu = await query(AudioTansCollectionRef, where("verified", "==", "unverified"));
-      const docsRef = await getDocs(qu);
-      await setAudioTranscriptions(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      console.log(audioTranscriptions);
-    }
-    loadData();
-  },[])
 
   return (
     <Wrap>
@@ -59,7 +37,7 @@ const Contribute = () => {
           overflowY:'scroll'
         }}
       >
-        <Speak onClose={handleSpeakModal} data={transcriptions} />
+        <Speak onClose={handleSpeakModal} />
       </Modal>
       <Modal
         open={openListenModal}
@@ -73,7 +51,7 @@ const Contribute = () => {
           overflowY:'scroll'
         }}
       >
-        <Listen onClose={ handleListenModal } data={audioTranscriptions} />
+        <Listen onClose={ handleListenModal } />
       </Modal>
       
     </Wrap>
