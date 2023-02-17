@@ -6,7 +6,7 @@ import AudioControl from './AudioControl'
 import BackArrow from './BackArrow';
 import CustomBtn from './CustomBtn';
 import TextDisplay from './TextDisplay';
-import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../utils/firebase-config';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { Bars, LineWave } from 'react-loader-spinner';
@@ -31,6 +31,7 @@ const Speak = ({ onClose }) => {
 
   const transCollectionRef = collection(db, "transcriptions");
   const metadataCollectionRef = collection(db, "metadata");
+  const [loading, setLoading] = useState(false);
   
   const user = useSelector(auth => auth.user);
 
@@ -71,6 +72,27 @@ const Speak = ({ onClose }) => {
     clearBlobUrl();
   }
 
+  const addMetadata = async (id, data) => {
+    const metadataDoc = await doc(db, "metadata", id);
+    const metaElement = await getDoc(metadataDoc);
+    if (!metaElement.exists()) {
+      try {
+        await setDoc(metadataDoc, data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  const updateTrans = async (id) => {
+    try {
+      const document = await doc(db, 'transcriptions', id);
+      await updateDoc(document, { recorded: true });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   const submit = async () => {
     setUploading(true);
     const audioBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
@@ -86,7 +108,7 @@ const Speak = ({ onClose }) => {
       audio_path: `waves/${text.sequence_id}.wav`,
       audio_url: '',
       duration_in_seconds: audiRef.current.duration,
-      verified: 'unverified',
+      verified: false,
       createdAt: Date.now()
     }
 
@@ -95,7 +117,7 @@ const Speak = ({ onClose }) => {
       uploadBytes(audioRef, audiofile).then((file) => {
         getDownloadURL(file.ref).then(async (url) => {
           trans.audio_url = url;
-          await addDoc(metadataCollectionRef, trans);
+          await addMetadata(text.id, trans);
           await updateTrans(text.id);
           loadData();
           setUploading(false);
@@ -106,21 +128,13 @@ const Speak = ({ onClose }) => {
     }
   }
 
-  const updateTrans = async (id) => {
-    try {
-      const document = await doc(db, 'transcriptions', id);
-      await updateDoc(document, { recorded: true });
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+
 
   const generateText = () => {
-    if (text) {
-      const index = parseInt(Math.random() * data.length);
-      setText(data[index]);
-      reset();
-    }
+    const index = parseInt(Math.random() * data.length);
+    setText(data[index]);
+    reset();
+    
   }
 
   const reset = () => {
@@ -130,9 +144,11 @@ const Speak = ({ onClose }) => {
   }
 
   const loadData = async () => {
+    setLoading(true);
     const qu = await query(transCollectionRef, where("recorded", "==", false));
     const docsRef = await getDocs(qu);
     await setData(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -169,14 +185,15 @@ const Speak = ({ onClose }) => {
           )
         }
         
-        <TextDisplay> {text ? text?.transcription :
-          (
-            <>
-              <LineWave /> <br />
-            </>
-
-          )
-        } </TextDisplay>
+        <TextDisplay>
+          {
+            (!data.length && !loading) ? (
+              "Sorry!. No statement availiable for recording now.."
+            ): (
+              text ? text?.transcription : <LineWave />
+            )
+          }
+        </TextDisplay>
         <Box sx={{
           position: 'absolute',
           top: 15,

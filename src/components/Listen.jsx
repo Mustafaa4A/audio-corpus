@@ -1,12 +1,14 @@
-import { Check, Clear, KeyboardVoice, PlayArrow, Stop } from '@mui/icons-material'
-import { Box, Typography } from '@mui/material'
-import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { Check, Clear, KeyboardDoubleArrowRight, KeyboardVoice, PlayArrow, Stop } from '@mui/icons-material'
+import { Box, Button, Typography } from '@mui/material'
+import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { deleteObject, ref } from 'firebase/storage'
 import React, { useEffect, useRef, useState } from 'react'
 import { LineWave } from 'react-loader-spinner'
-import { db } from '../utils/firebase-config'
+import { db, storage } from '../utils/firebase-config'
 import AudioControl from './AudioControl'
 import BackArrow from './BackArrow'
 import TextDisplay from './TextDisplay'
+import VerifyBtn from './VerifyBtn'
 import Waiting from './Waiting'
 
 const Listen = ({ onClose }) => {
@@ -15,12 +17,15 @@ const Listen = ({ onClose }) => {
   const [processing, setProcessing] = useState(false);
   const [transcription, setTranscriptions] = useState();
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const AudioTansCollectionRef = collection(db, "metadata");
 
   const playAudio = () => {
-    setPlaying(true);
-    audiRef.current.play();
+    if (transcription) {
+      setPlaying(true);
+      audiRef.current.play();
+    }
   }
 
   const pauseAudio = () => {
@@ -38,11 +43,34 @@ const Listen = ({ onClose }) => {
   }
 
 
-  const submitVerify = async (id, status) => {
+  const sucessVerify = async () => {
     setProcessing(true);
     try {
-      const document = await doc(db, 'metadata', id);
-      await updateDoc(document, { verified: status });
+      const document = await doc(db, 'metadata', transcription.id);
+      await updateDoc(document, { verified: true });
+      loadData();
+      setProcessing(false);
+    } catch (error) {
+      console.log(error.message);
+      setProcessing(false);
+    }
+  }
+
+  const errorVerify = async () => {
+    setProcessing(true);
+    try {
+      // update the transcriptyion
+      const transDoc = await doc(db, 'transcriptions', transcription.id);
+      await updateDoc(transDoc, { recorded: false });
+
+      // delete metadata
+      const metaDoc = await doc(db, 'metadata', transcription.id);
+      await deleteDoc(metaDoc);
+
+      // delete file
+      const audioRef = ref(storage, transcription.audio_path);
+      await deleteObject(audioRef);
+      
       loadData();
       setProcessing(false);
     } catch (error) {
@@ -52,9 +80,11 @@ const Listen = ({ onClose }) => {
   }
 
   const loadData = async () => {
-    const qu = await query(AudioTansCollectionRef, where("verified", "==", "unverified"));
+    setLoading(true);
+    const qu = await query(AudioTansCollectionRef, where("verified", "==", false));
     const docsRef = await getDocs(qu);
-    await setData(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id }))); 
+    await setData(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -75,7 +105,6 @@ const Listen = ({ onClose }) => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height:'80vh',
         pt: 12,
         px:2
       }}>
@@ -83,19 +112,34 @@ const Listen = ({ onClose }) => {
         <Typography variant='h6' color='white' pb='2' >
           Tap <PlayArrow sx={{  fontSize: 35,color:'#5bc0de' }} />to listen
         </Typography>
-
         
-        <TextDisplay> {transcription ? transcription?.transcription : (<LineWave />)} </TextDisplay>
+        <TextDisplay>
+          {
+           (!data.length && !loading) ? (
+              "Sorry!. No statement availiable for recording now.."
+            ): (
+              transcription ? transcription?.transcription : <LineWave />
+            )
+          }
+        </TextDisplay>
         
         <video src={transcription?.audio_url} ref={audiRef} onEnded={(onEndAudio)} hidden />
         
-        <Box sx={{display:'flex', gap:4, mt:4}}>
-          <AudioControl disabled={playing}  onClick={()=>submitVerify(transcription.id, 'success')}>
-            <Check sx={{
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 4, mt: 4,
+            justifyContent: 'center',
+            alignItems: 'end'
+          }}
+        >
+          <VerifyBtn color='error' disabled={!transcription || playing}
+            onClick={errorVerify}>
+            <Clear sx={{
               fontSize: 35,
-              color:'#5bc0de'
-            }} />
-          </AudioControl>
+              color:'white'
+            }} /> 
+          </VerifyBtn>
           {
             playing ? (
                 <AudioControl onClick={pauseAudio}>
@@ -113,14 +157,32 @@ const Listen = ({ onClose }) => {
                 </AudioControl>
             )
           }
-          <AudioControl hidden onClick={()=>submitVerify(transcription.id, 'error')}>
-            <Clear sx={{
+          <VerifyBtn color='success' disabled={!transcription || playing}
+            onClick={sucessVerify}>
+            <Check sx={{
               fontSize: 35,
-              color:'#d9534f'
+              color:'white'
             }} />
-          </AudioControl>
-        </Box>
+          </VerifyBtn>
         
+        </Box>
+          <Box
+          sx={{
+            p: 1.2,
+            px: 5,
+            border: '1px solid white',
+            position: 'absolute',
+            bottom: 5,
+            right:2,
+            display: 'flex',
+            justifyContent: 'center',
+            borderRadius: '15px',
+            cursor:'pointer'
+          }}
+          onClick={generateTrans}
+        >
+          <KeyboardDoubleArrowRight sx={{fontSize:30}} />
+        </Box>
       </Box>
     </>
   )

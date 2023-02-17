@@ -16,7 +16,11 @@ const AudioDataset = () => {
     { name: 'transcription', label: 'Transcription', },
     { name: 'audio_path', label: 'Audio Path',},
     { name: 'duration_in_seconds', label: 'Duration in seconds',},
-    { name: 'person', label: 'Person',options:{}}
+    { name: 'person', label: 'Person', options: {} },
+    {
+       name: 'verified', label: 'Verified', options:{
+         customBodyRender: (value) => value?'Yes':'No'
+    }}
   ];
 
   useEffect(() => {
@@ -30,10 +34,7 @@ const AudioDataset = () => {
     
   }, [])
 
-  const opttions = {
-    onCellClick:(e)=>console.log("oooooooo"),
-  }
-
+ 
   return (
     <Wrap>
       <Box sx={{
@@ -49,7 +50,6 @@ const AudioDataset = () => {
               title='Audio Corpus'
               data={data}
               columns={columns}
-              opttions={opttions}
             />
           ) : (
               <Box sx={{
