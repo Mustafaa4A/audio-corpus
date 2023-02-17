@@ -1,5 +1,4 @@
-import { Modal } from '@mui/material'
-import { Button } from '@mui/material'
+import { Modal, Button } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import Speak from '../components/Speak'
 import Wrap from '../components/Wrap'
@@ -17,6 +16,7 @@ const Contribute = () => {
   const [audioTranscriptions, setAudioTranscriptions] = useState([]);
   
   const transCollectionRef = collection(db, "transcriptions");
+  const AudioTansCollectionRef = collection(db, "metadata");
 
   const handleSpeakModal = () => setOpenSpeakModal(prev => !prev);
   const handleListenModal = () => setOpenListenModal(prev => !prev);
@@ -31,6 +31,16 @@ const Contribute = () => {
     }
     loadData();
   }, [])
+
+  useEffect(() => {
+      const loadData = async () => {
+      const qu = await query(AudioTansCollectionRef, where("verified", "==", "unverified"));
+      const docsRef = await getDocs(qu);
+      await setAudioTranscriptions(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      console.log(audioTranscriptions);
+    }
+    loadData();
+  },[])
 
   return (
     <Wrap>
@@ -63,7 +73,7 @@ const Contribute = () => {
           overflowY:'scroll'
         }}
       >
-        <Listen onClose={ handleListenModal } />
+        <Listen onClose={ handleListenModal } data={audioTranscriptions} />
       </Modal>
       
     </Wrap>

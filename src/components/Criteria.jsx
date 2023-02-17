@@ -1,3 +1,4 @@
+import { Divider } from '@mui/material'
 import { Avatar, Box, Grid, Typography } from '@mui/material'
 import React from 'react'
 import CriteriaItem from './CriteriaItem'
@@ -14,16 +15,12 @@ const Criteria = () => {
           </Typography>
         </Grid>
         <Grid item xm={12} sm={7} mt={3}>
-          <CriteriaItem number={1} title="Akhris qaldan" >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque accusamus mollitia architecto hic consequatur, officia consequuntur veritatis nisi nulla itaque exercitationem ipsum minus reiciendis dolores sint nihil numquam voluptatum quaerat.
-          </CriteriaItem>
-          <CriteriaItem number={1} title="Akhris qaldan" >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque accusamus mollitia architecto hic consequatur, officia consequuntur veritatis nisi nulla itaque exercitationem ipsum minus reiciendis dolores sint nihil numquam voluptatum quaerat.
-          </CriteriaItem>
-          <CriteriaItem number={1} title="Akhris qaldan" >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque accusamus mollitia architecto hic consequatur, officia consequuntur veritatis nisi nulla itaque exercitationem ipsum minus reiciendis dolores sint nihil numquam voluptatum quaerat.
+          <CriteriaItem number={1} title="Isku hubi dhawaqa ereyaha" >
+            Marka dhagaysanaysid codka si fiican iskaga hubi dhawaaqa eryaha qaar, iskana eeg waxa aadan
+            ku dhawaaqayso inay si sax ah u waafaqsanyihin qoraalka shaashada ka muuqda.
           </CriteriaItem>
         </Grid>
+        
       </Grid>
     </Box>
   )

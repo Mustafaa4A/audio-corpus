@@ -8,19 +8,19 @@ import CustomBtn from './CustomBtn';
 import TextDisplay from './TextDisplay';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../utils/firebase-config';
-import { ref, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { Bars } from 'react-loader-spinner';
 import { useSelector } from 'react-redux';
 import Waiting from './Waiting';
 
-const Speak = ({onClose, data}) => {
+const Speak = ({ onClose, data }) => {
   const [uploading, setUploading] = useState(false);
   const { startRecording, stopRecording, pauseRecording, mediaBlobUrl, clearBlobUrl } = useReactMediaRecorder({
     video: false,
     audio: true,
     echoCancellation: true,
     blobPropertyBag: { type: "audio/wav" },
-    askPermissionOnMount:true
+    askPermissionOnMount: true
   });
   const audiRef = useRef();
   const [recording, setRecording] = useState(false);
@@ -36,10 +36,10 @@ const Speak = ({onClose, data}) => {
   
   const start = async () => {
     navigator.permissions.query({ name: 'microphone' }).then(({ state }) => {
-        if (state === 'granted') {
-          startRecording();
-          setRecording(prev => !prev);
-        }
+      if (state === 'granted') {
+        startRecording();
+        setRecording(prev => !prev);
+      }
     })
   };
 
@@ -72,7 +72,7 @@ const Speak = ({onClose, data}) => {
     setUploading(true);
     const audioBlob = await fetch(mediaBlobUrl).then((r) => r.blob());
     const audiofile = new File([audioBlob], `${text.sequence_id}.wav`, {
-        type: "audio/wav",
+      type: "audio/wav",
     });
 
     const trans = {
@@ -81,21 +81,29 @@ const Speak = ({onClose, data}) => {
       person: user.displayName,
       audio_name: text.sequence_id,
       audio_path: `waves/${text.sequence_id}.wav`,
-      duration_in_seconds:audiRef.current.duration,
+      audio_url: '',
+      duration_in_seconds: audiRef.current.duration,
+      verified: 'unverified',
       createdAt: Date.now()
-    } 
+    }
 
     const audioRef = ref(storage, trans.audio_path);
-    uploadBytes(audioRef, audiofile).then(async () => {
-      await addDoc(metadataCollectionRef, trans);
-      await updateTrans(text.id);
-      generateText();
-      setUploading(false);
-    });
+    try {
+      uploadBytes(audioRef, audiofile).then((file) => {
+        getDownloadURL(file.ref).then(async (url) => {
+          trans.audio_url = url;
+          await addDoc(metadataCollectionRef, trans);
+          await updateTrans(text.id);
+          generateText();
+          setUploading(false);
+        })
+      })
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
   const updateTrans = async (id) => {
-    console.log(id);
     try {
       const document = await doc(db, 'transcriptions', id);
       await updateDoc(document, { recorded: true });
@@ -106,12 +114,9 @@ const Speak = ({onClose, data}) => {
 
   const generateText = () => {
     const index = parseInt(Math.random() * data.length);
-    setText({
-      id: data[index]?.id,
-      sequence_id: data[index]?.sequence_id, 
-      transcription: data[index]?.transcription
-    });
+    setText(data[index]);
     reset();
+    console.log(data[index]);
   }
 
   const reset = () => {

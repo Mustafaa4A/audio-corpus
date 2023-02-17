@@ -23,4 +23,4 @@ const CriteriaItem = ({children, number, title}) => {
   )
 }
 
-export default CriteriaItem
+export default CriteriaItem;
