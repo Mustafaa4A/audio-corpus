@@ -4,10 +4,11 @@ import "./index.css";
 import { lazy, Suspense, useEffect } from "react";
 import Loading from "./components/Loading";
 import { useSelector } from "react-redux";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import DisplayText from "./pages/DisplayText";
 
 const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
-const Contact = lazy(() => import('./pages/Contact'));
 const SignIn = lazy(() => import('./pages/SignIn'));
 const SignUp = lazy(() => import('./pages/SignUp'));
 const Dataset = lazy(() => import('./pages/Dataset'));
@@ -16,21 +17,34 @@ const AudioDataset = lazy(() => import('./pages/AudioDataset'));
 const Users = lazy(() => import('./pages/Users'));
 const Contribute = lazy(() => import('./pages/Contribute'));
 
+
+const font = "'Work Sans', sans-serif";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: font,
+  },
+  button: {
+    fontFamily: font,
+  },
+   palette: {
+    // primary: blue,
+  },
+});
+
+
 const App = () => {
   const user = useSelector(auth => auth.user);
   const isLogin = useSelector(auth => auth.isLogin);
-  console.log(useSelector(auth=>auth));
-  useEffect(() => {
-    console.log(isLogin);
-    console.log(user);
-  },[])
+  console.log(useSelector(auth => auth));
+ 
 
   return (
-    <Suspense fallback={<Loading />}>
+    <ThemeProvider theme={theme}>
+      <Suspense fallback={<Loading />}>
       <Routes>
         <Route path="/" element={<Navigation />} >
           <Route index element={<Home />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/aboutus" element={<About />} />
           <Route path="/contribute"
              element={isLogin ? (<Contribute />) : (<Navigate replace to='/' />)}
@@ -46,6 +60,10 @@ const App = () => {
           <Route path="dataset/audio"
             element={(isLogin && user?.roll==='admin')  ? (<AudioDataset />) :
               (<Navigate replace to='/signin' />)}
+            />
+          <Route path="dataset/text/display"
+            element={(isLogin && user?.roll==='admin')  ? (<DisplayText />) :
+              (<Navigate replace to='/signin' />)}
           />
           <Route path="/users" element={<Users />}/>
         </Route>
@@ -56,6 +74,7 @@ const App = () => {
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </Suspense>
+    </ThemeProvider>
   )
 }
 

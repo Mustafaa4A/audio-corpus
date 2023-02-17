@@ -14,7 +14,6 @@ import {
 import { AddBusinessRounded, SettingsVoice } from "@mui/icons-material";
 import DrawerComp from "./DrawerComp";
 import { useDispatch, useSelector } from "react-redux";
-import pages from "../utils/pages";
 import { Avatar } from "@mui/material";
 import { logout } from '../store/reducer';
 
@@ -60,7 +59,6 @@ const Navigation = () => {
                               <Tab label='Dataset' onClick={() => navigate('/dataset')} />
                         }
                         <Tab label='About Us' onClick={() => navigate('/aboutus')} />
-                        <Tab label='Contact' onClick={() => navigate('/contact')} />
 
                      </Tabs>
                         {

@@ -56,11 +56,6 @@ const DrawerComp = () => {
                      <ListItemText onClick={()=>navigate('/aboutus')}>About Us</ListItemText>
                   </ListItemIcon>
                </ListItemButton>
-               <ListItemButton>
-                  <ListItemIcon>
-                     <ListItemText onClick={()=>navigate('/contact')}>Contact</ListItemText>
-                  </ListItemIcon>
-               </ListItemButton>
 
                {isLogin && 
                <ListItemButton>

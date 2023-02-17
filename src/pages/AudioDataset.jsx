@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { collection, getDocs } from 'firebase/firestore';
 import MUIDataTable from 'mui-datatables';
 import React, { useEffect, useState } from 'react'
+import { LineWave } from 'react-loader-spinner';
 import Wrap from '../components/Wrap'
 import { db } from '../utils/firebase-config';
 
@@ -43,13 +44,24 @@ const AudioDataset = () => {
           mb:15
         }}>
         {
-          data && (
+          data.length ? (
             <MUIDataTable
               title='Audio Corpus'
               data={data}
               columns={columns}
               opttions={opttions}
             />
+          ) : (
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                height: '80vh',
+                justifyContent: 'center',
+                alignItems:'center'
+              }}>
+                <LineWave />
+              </Box>
           )
         }
       </Box>

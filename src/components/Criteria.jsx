@@ -16,7 +16,7 @@ const Criteria = () => {
         </Grid>
         <Grid item xm={12} sm={7} mt={3}>
           <CriteriaItem number={1} title="Isku hubi dhawaqa ereyaha" >
-            Marka dhagaysanaysid codka si fiican iskaga hubi dhawaaqa eryaha qaar, iskana eeg waxa aadan
+            Marka dhagaysanaysid codka si fiican iskaga hubi dhawaaqa ereyaha qaar, iskana eeg waxa aadan
             ku dhawaaqayso inay si sax ah u waafaqsanyihin qoraalka shaashada ka muuqda.
           </CriteriaItem>
         </Grid>

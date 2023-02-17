@@ -34,7 +34,7 @@ const Home = () => {
           alignItems: 'center',
           width: '100%',
           height: '100vh',
-          bgcolor: 'rgba(46, 45, 45, 0.5)',
+          bgcolor: 'rgba(46, 45, 45, 0.1)',
           mb:12
         }}
       >
@@ -68,7 +68,7 @@ const Home = () => {
             fontSize: '1.4em',
             
           }}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, dicta dolor. Delectus ipsum iusto minima dignissimos architecto neque vitae sunt quas iure voluptatem, dicta sint quibusdam, illo provident illum ab.
+            Take a few time to share your voice with us, and together we can create a more inclusive and technologically advanced future.
           </Typography>
           
           {
@@ -89,7 +89,11 @@ const Home = () => {
                 </Button>
               </Box>
             )
-         }
+          }
+          <Button size='large' color='error' sx={{ mx: "auto", width:'100%', p:1.5, mt:5, maxWidth:'400px' }} variant="contained"
+                  onClick={() => navigate('/aboutus')}>
+                  Read More About the webssite!
+          </Button>
         </Box>
       </Box>
       <Copyright />

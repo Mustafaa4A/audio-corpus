@@ -36,12 +36,14 @@ const Speak = ({ onClose }) => {
 
   
   const start = async () => {
-    navigator.permissions.query({ name: 'microphone' }).then(({ state }) => {
-      if (state === 'granted') {
-        startRecording();
-        setRecording(prev => !prev);
-      }
-    })
+    if (text) {
+      navigator.permissions.query({ name: 'microphone' }).then(({ state }) => {
+        if (state === 'granted') {
+          startRecording();
+          setRecording(prev => !prev);
+        }
+      })
+    }
   };
 
   const stopRecord = () => {
@@ -114,10 +116,11 @@ const Speak = ({ onClose }) => {
   }
 
   const generateText = () => {
-    const index = parseInt(Math.random() * data.length);
-    setText(data[index]);
-    reset();
-    console.log(data[index]);
+    if (text) {
+      const index = parseInt(Math.random() * data.length);
+      setText(data[index]);
+      reset();
+    }
   }
 
   const reset = () => {
@@ -166,7 +169,14 @@ const Speak = ({ onClose }) => {
           )
         }
         
-        <TextDisplay> { text ? text?.transcription:(<LineWave/>)} </TextDisplay>
+        <TextDisplay> {text ? text?.transcription :
+          (
+            <>
+              <LineWave /> <br />
+            </>
+
+          )
+        } </TextDisplay>
         <Box sx={{
           position: 'absolute',
           top: 15,

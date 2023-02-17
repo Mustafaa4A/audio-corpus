@@ -7,8 +7,11 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../utils/firebase-config';
 import Listen from '../components/Listen'
 import Criteria from '../components/Criteria'
+import CustomBtn from '../components/CustomBtn';
+import { useSelector } from 'react-redux';
 
 const Contribute = () => {
+  const user = useSelector(auth => auth.user);
   const [openSpeakModal, setOpenSpeakModal] = useState(false);
   const [openListenModal, setOpenListenModal] = useState(false);
 
@@ -23,8 +26,8 @@ const Contribute = () => {
   return (
     <Wrap>
       <Criteria />
-      <Button onClick={handleSpeakModal}>Speak</Button>
-      <Button onClick={handleListenModal}>Listen</Button>
+      <Button variant='contained' onClick={handleSpeakModal}>Speak</Button>
+      { (user.roll === 'admin') && <Button onClick={handleListenModal}>Listen</Button>}
       <Modal
         open={openSpeakModal}
         onClose={handleSpeakModal}

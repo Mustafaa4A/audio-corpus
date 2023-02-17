@@ -5,29 +5,17 @@ import Container from '@mui/material/Container';
 import { Box } from '@mui/system';
 import Copyright from './Copyright';
 
-const font = "'Work Sans', sans-serif";
-
-const theme = createTheme({
-  typography: {
-    fontFamily: font,
-  },
-  button: {
-    fontFamily: font,
-  }
-});
 
 
 const Wrap = ({children}) => {
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="100">
-        <CssBaseline />
-        <Box sx={{ marginTop: 10}}>
-           { children}
-        </Box>
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
-    </ThemeProvider>
+    <Container component="main" maxWidth="100">
+      <CssBaseline />
+      <Box sx={{ marginTop: 10}}>
+          { children}
+      </Box>
+      <Copyright sx={{ mt: 5 }} />
+    </Container>
   )
 }
 
