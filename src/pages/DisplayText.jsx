@@ -12,8 +12,8 @@ const DisplayText = () => {
   const [loading, setLoading] = useState(false);
 
    const columns = [
-    { name: 'sequence_id', label: 'SEQUENCE ID', },
-    { name: 'transcription', label: 'Transcription', },
+    { name: 'sequence_id', label: 'ID', },
+    { name: 'transcription', label: 'Transcription', options:{filter:false}},
     {
        name: 'recorded', label: 'Recorded', options:{
          customBodyRender: (value) => value?'Yes':'No'

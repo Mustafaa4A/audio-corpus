@@ -16,6 +16,7 @@ const TextDataset = lazy(() => import('./pages/TextDataset'));
 const AudioDataset = lazy(() => import('./pages/AudioDataset'));
 const Users = lazy(() => import('./pages/Users'));
 const Contribute = lazy(() => import('./pages/Contribute'));
+const Http404 = lazy(() => import('./pages/Http404'));
 
 
 const font = "'Work Sans', sans-serif";
@@ -51,27 +52,30 @@ const App = () => {
           />
           <Route path="/dataset"
             element={(isLogin && user?.roll==='admin')  ? (<Dataset />) :
-              (<Navigate replace to='/signin' />)}
+              (<Navigate replace to='/' />)}
           />
           <Route path="dataset/text"
             element={(isLogin && user?.roll === 'admin') ? (<TextDataset />) :
-              (<Navigate replace to='/signin' />)}
+              (<Navigate replace to='/' />)}
           />
           <Route path="dataset/audio"
             element={(isLogin && user?.roll==='admin')  ? (<AudioDataset />) :
-              (<Navigate replace to='/signin' />)}
+              (<Navigate replace to='/' />)}
             />
           <Route path="dataset/text/display"
             element={(isLogin && user?.roll==='admin')  ? (<DisplayText />) :
-              (<Navigate replace to='/signin' />)}
+              (<Navigate replace to='/' />)}
+            />
+            <Route path="/contributers"
+            element={(isLogin && user?.roll==='admin')  ? (<Users />) :
+              (<Navigate replace to='/' />)}
           />
-          <Route path="/users" element={<Users />}/>
         </Route>
         <Route path="/signin"
            element={!isLogin ? (<SignIn />) : (<Navigate replace to='/' />)}
         />
         <Route path="/Signup" element={<SignUp />} />
-        <Route path="*" element={<h1>404</h1>} />
+        <Route path="*" element={<Http404 />} />
       </Routes>
     </Suspense>
     </ThemeProvider>

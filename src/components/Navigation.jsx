@@ -58,6 +58,9 @@ const Navigation = () => {
                               (isLogin && user?.roll == 'admin') &&
                               <Tab label='Dataset' onClick={() => navigate('/dataset')} />
                         }
+                        {
+                           (isLogin && user?.roll == 'admin') &&  <Tab label='Contributers' onClick={() => navigate('/contributers')} />
+                        }
                         <Tab label='About Us' onClick={() => navigate('/aboutus')} />
 
                      </Tabs>

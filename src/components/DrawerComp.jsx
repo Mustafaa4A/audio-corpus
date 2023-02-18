@@ -51,6 +51,15 @@ const DrawerComp = () => {
                   </ListItemButton>
                   )
                }
+                {(isLogin && user.roll=='admin' )&& 
+                  (
+                  <ListItemButton>
+                     <ListItemIcon>
+                        <ListItemText onClick={()=>navigate('/contributers')}>Contributers</ListItemText>
+                     </ListItemIcon>
+                  </ListItemButton>
+                  )
+               }
                <ListItemButton>
                   <ListItemIcon>
                      <ListItemText onClick={()=>navigate('/aboutus')}>About Us</ListItemText>

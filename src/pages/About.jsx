@@ -1,22 +1,25 @@
 import { Send } from '@mui/icons-material'
 import { Button, TextField } from '@mui/material'
-import { Divider, Typography } from '@mui/material'
+import {  Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import Wrap from '../components/Wrap'
 const About = () => {
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log(data.get('name'));
     console.log(data.get('message'));
+
+    navigate('/');
+
   }
   return (
     <Wrap>
       <Box mt='50px'>
-        {/* <Typography variant='h5' fontSize='2em'  my='10px' textTransform='uppercase'>About this platform</Typography>
-        <Divider /> */}
         <Box
           sx={{
             display: 'flex',

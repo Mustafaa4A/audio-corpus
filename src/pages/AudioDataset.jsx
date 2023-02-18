@@ -10,11 +10,12 @@ import { db } from '../utils/firebase-config';
 const AudioDataset = () => {
   const metadataCollectionRef = collection(db, "metadata");
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
    const columns = [
     { name: 'sequence_id', label: 'ID', },
-    { name: 'transcription', label: 'Transcription', },
-    { name: 'audio_path', label: 'Audio Path',},
+    { name: 'transcription', label: 'Transcription',options:{filter:false} },
+    { name: 'audio_path', label: 'Audio Path',options:{filter:false}},
     { name: 'duration_in_seconds', label: 'Duration in seconds',},
     { name: 'person', label: 'Person', options: {} },
     {
@@ -25,10 +26,10 @@ const AudioDataset = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      // const qu = await query(metadataCollectionRef, where("recorded", "==", false));
+      setLoading(true);
       const docsRef = await getDocs(metadataCollectionRef);
       await setData(docsRef.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      console.log(data);
+      setLoading(false);
     }
     loadData();
     
@@ -45,7 +46,7 @@ const AudioDataset = () => {
           mb:15
         }}>
         {
-          data.length ? (
+          !loading ? (
             <MUIDataTable
               title='Audio Corpus'
               data={data}
