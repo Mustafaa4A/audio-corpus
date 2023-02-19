@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../utils/firebase-config';
 import Wrap from '../components/Wrap';
+import * as XLSX from 'xlsx';
 
 const TextDataset = () => {
   const [show, setShow] = useState(false);
@@ -25,31 +26,29 @@ const TextDataset = () => {
 
   const readFile = (e) => {
     e.preventDefault();
-    if (file) {
-      fileReader.onload = function (event) {
-        const data = event.target.result;
-        const buffer = data.toString();
-        const arr = buffer.split('\n');
-        const headers = ['id', 'text'];
+    const name = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const bstr = e.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-        const objDate = [];
-        for (let i = 1; i < arr.length; i++) {
-          const item = arr[i].split(',');
-          let obj = {};
-          for (var j = 0; j < item.length; j++) {
-            const column = headers[j];
-            const element = item[j].trim();
-            obj[column] = element;
-          }
-          if (obj.id || obj.text) {
-            objDate.push(obj);
-          }
+      const objDate = [];
+      for (let i = 1; i < data.length; i++){
+        let obj = {};
+        obj['id'] = data[i][0];
+        obj['text'] = data[i][1];
+        if (obj.id || obj.text) {
+          objDate.push(obj);
         }
-        setRows(objDate);
-      };
-      fileReader.readAsText(file);
-      setShow(true);
+      }
+      console.log(objDate);
+      setRows(objDate);
     }
+    reader.readAsBinaryString(file);
+    setShow(true);
   };
 
   const submitData = async () => {
@@ -74,7 +73,7 @@ const TextDataset = () => {
           <input
           type={"file"}
           id={"csvFileInput"}
-          accept={".csv"}
+          accept={".xlsx"}
           onChange={handleOnChange}
           hidden
           />
