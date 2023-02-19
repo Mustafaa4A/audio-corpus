@@ -1,5 +1,5 @@
 import { Send } from '@mui/icons-material'
-import { Button, TextField } from '@mui/material'
+import { Button, Link, TextField } from '@mui/material'
 import {  Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React from 'react'
@@ -14,7 +14,6 @@ const About = () => {
     console.log(data.get('name'));
     console.log(data.get('message'));
 
-    navigate('/');
 
   }
   return (
@@ -73,6 +72,14 @@ const About = () => {
           <Button type="submit" startIcon={<Send />} size='large' variant='contained'  sx={{ml:'auto'}}>
             SEND
           </Button>
+        </Box>
+        <Box sx={{mt:3}}>
+          <Link href='https://wa.me/+252683891399'
+            sx={{ p: 2, textDecoration: 'none', bgcolor: 'green', color: 'white', borderRadius: '10px', cursor: 'pointer' }}>Whatsaap
+          </Link>
+          <Link href='mailto: 4a.ascad@gmail.com'
+            sx={{ p: 2,ml:2, textDecoration: 'none', bgcolor: '#E84D7B', color: 'white', borderRadius: '10px', cursor: 'pointer' }}>Email
+          </Link>
         </Box>
       </Box>
     </Wrap>

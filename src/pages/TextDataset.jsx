@@ -1,22 +1,21 @@
 import { Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
 import React, { useState } from 'react'
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../utils/firebase-config';
 import Wrap from '../components/Wrap';
 import * as XLSX from 'xlsx';
+import MUIDataTable from 'mui-datatables';
 
 const TextDataset = () => {
   const [show, setShow] = useState(false);
   const [rows, setRows] = useState([]);
   const columns = [
-    { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'text', headerName: 'Text', width: 800 },
+    { name: 'id', label: 'ID',},
+    { name: 'text', label: 'Text'},
   ];
 
   const [file, setFile] = useState();
-  const fileReader = new FileReader();
 
   const transCollectionRef = collection(db, "transcriptions");
 
@@ -26,7 +25,6 @@ const TextDataset = () => {
 
   const readFile = (e) => {
     e.preventDefault();
-    const name = file.name;
     const reader = new FileReader();
     reader.onload = (e) => {
       const bstr = e.target.result;
@@ -52,7 +50,6 @@ const TextDataset = () => {
   };
 
   const submitData = async () => {
-    console.log(rows[0]);
     try {
       for (const item of rows) {
         await addDoc(transCollectionRef,
@@ -63,6 +60,14 @@ const TextDataset = () => {
     } catch (error) {
       console.log(error.message);
     }
+  }
+
+  const options = {
+    search: false,
+    download: false,
+    print: false,
+    filter: false,
+    view: false
   }
 
   return (
@@ -82,8 +87,9 @@ const TextDataset = () => {
         </Button>
         <Button disabled={!file?true:false} variant='contained' onClick={readFile} sx={{m:2}}>
           Display
-        </Button>
-     </form>
+          </Button>
+          <Button disabled={!file?true:false} color='success' variant='contained' onClick={submitData}>Submit</Button>
+        </form>
       </Box>
       
       <Box
@@ -101,33 +107,15 @@ const TextDataset = () => {
         <h1>Upload Dataset</h1>
         {
           show && (
-            <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={10}
-            rowsPerPageOptions={[10]}
-            checkboxSelection
+            <MUIDataTable
+              title='Transcription data'
+              data={rows}
+              columns={columns}
+              options={options}
         />
           )
         }
       </Box>
-      <Button disabled={!file?true:false} color='success' variant='contained' onClick={submitData}
-      sx={{
-        display:'block',
-        px:12,
-        py:2,
-        borderRadius:'30px',
-        ml:{
-          md:'auto'
-        },
-        mt:3,
-        mr:{
-          md:15
-        }
-      }}
-      >
-          Submit
-      </Button>
     </Wrap>
   )
 }
