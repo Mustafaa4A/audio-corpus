@@ -75,7 +75,7 @@ const About = () => {
         </Box>
         <Box sx={{mt:3}}>
           <Link href='https://wa.me/+252683891399'
-            sx={{ p: 2, textDecoration: 'none', bgcolor: 'green', color: 'white', borderRadius: '10px', cursor: 'pointer' }}>Whatsaap
+            sx={{ p: 2, textDecoration: 'none', bgcolor: 'green', color: 'white', borderRadius: '10px', cursor: 'pointer' }}>Whatsapp
           </Link>
           <Link href='mailto: 4a.ascad@gmail.com'
             sx={{ p: 2,ml:2, textDecoration: 'none', bgcolor: '#E84D7B', color: 'white', borderRadius: '10px', cursor: 'pointer' }}>Email
