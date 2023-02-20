@@ -14,6 +14,7 @@ const About = () => {
     console.log(data.get('name'));
     console.log(data.get('message'));
 
+    navigate('/');
 
   }
   return (
