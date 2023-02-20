@@ -25,12 +25,6 @@ const theme = createTheme({
   typography: {
     fontFamily: font,
   },
-  button: {
-    fontFamily: font,
-  },
-   palette: {
-    // primary: blue,
-  },
 });
 
 
