@@ -1,7 +1,7 @@
 import { Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import React, { useState } from 'react'
-import { collection, addDoc, writeBatch, doc } from 'firebase/firestore';
+import { collection, writeBatch, doc } from 'firebase/firestore';
 import { db } from '../utils/firebase-config';
 import Wrap from '../components/Wrap';
 import * as XLSX from 'xlsx';
@@ -18,7 +18,6 @@ const TextDataset = () => {
 
   const [file, setFile] = useState();
 
-  const transCollectionRef = collection(db, "transcriptions");
 
   const handleOnChange = (e) => {
     setFile(e.target.files[0]);
@@ -50,12 +49,13 @@ const TextDataset = () => {
   };
 
   const submitData = async () => {
-
-    try {
+   try {
       const batch = writeBatch(db);
-      await rows.map(async (document) => {
+      await rows.map(async (item) => {
         const docRef = await doc(db, "transcriptions", uuidv4());
-        await batch.set(docRef, document);
+        await batch.set(docRef,
+          { sequence_id: item.id, transcription: item.text, recorded: false }
+        );
       });
 
       await batch.commit();
