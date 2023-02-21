@@ -13,9 +13,9 @@ const Users = () => {
   const [loading, setLoading] = useState(false);
 
   const columns = [
-    { name: 'displayName', label: 'Name', },
+    { name: 'displayName', label: 'Name', options:{filter:false}},
     { name: 'email', label: 'Email',options:{filter:false} },
-    { name: 'roll', label: 'Roll',options:{filter:false}},
+    { name: 'roll', label: 'Roll'},
     { name: 'num_seconds', label: 'Num Seconds',options:{filter:false}},
   ];
 
