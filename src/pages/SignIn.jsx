@@ -67,6 +67,12 @@ const SignIn = () => {
             return;
          }
 
+         if (error.code === "auth/user-disabled") {
+            setMessage("You're not allowed to the system, please contact to the adminstrator.");
+            setLoading(false);
+            return;
+         }
+
          setMessage("Error Ocurred");
          setLoading(false);
       }
