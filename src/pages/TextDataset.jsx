@@ -1,11 +1,12 @@
 import { Upload } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import React, { useState } from 'react'
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, writeBatch, doc } from 'firebase/firestore';
 import { db } from '../utils/firebase-config';
 import Wrap from '../components/Wrap';
 import * as XLSX from 'xlsx';
 import MUIDataTable from 'mui-datatables';
+import { uuidv4 } from '@firebase/util';
 
 const TextDataset = () => {
   const [show, setShow] = useState(false);
@@ -42,7 +43,6 @@ const TextDataset = () => {
           objDate.push(obj);
         }
       }
-      console.log(objDate);
       setRows(objDate);
     }
     reader.readAsBinaryString(file);
@@ -50,13 +50,19 @@ const TextDataset = () => {
   };
 
   const submitData = async () => {
+
     try {
-      for (const item of rows) {
-        await addDoc(transCollectionRef,
-          { sequence_id: item.id, transcription: item.text, recorded: false });
-        setFile(null);
-        setRows([]);
-      }
+      const batch = writeBatch(db);
+      await rows.map(async (document) => {
+        const docRef = await doc(db, "transcriptions", uuidv4());
+        await batch.set(docRef, document);
+      });
+
+      await batch.commit();
+      
+      setFile(null);
+      setRows([]);
+      
     } catch (error) {
       console.log(error.message);
     }
