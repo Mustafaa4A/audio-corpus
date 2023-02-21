@@ -31,7 +31,6 @@ const theme = createTheme({
 const App = () => {
   const user = useSelector(auth => auth.user);
   const isLogin = useSelector(auth => auth.isLogin);
-  console.log(useSelector(auth => auth));
  
 
   return (
