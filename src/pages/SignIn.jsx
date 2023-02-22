@@ -27,8 +27,8 @@ const SignIn = () => {
       setLoading(true);
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      const email = data.get('email');
-      const password = data.get('password');
+      const email = data.get('email').trim();
+      const password = data.get('password').trim();
 
       if (!password || !email) {
          setMessage("Fill the required fields");

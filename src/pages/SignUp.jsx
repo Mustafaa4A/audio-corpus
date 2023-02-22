@@ -24,12 +24,12 @@ const SignUp = () => {
       setLoading(true);
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      const fname = data.get('firstName');
-      const lname = data.get('lastName');
+      const fname = data.get('firstName').trim();
+      const lname = data.get('lastName').trim();
       const displayName = data.get('firstName') + ' ' + data.get('lastName');
-      const email = data.get('email');
-      const password = data.get('password');
-      const confirmPassword = data.get('confirmPassword');
+      const email = data.get('email').trim();
+      const password = data.get('password').trim();
+      const confirmPassword = data.get('confirmPassword').trim();
 
       if (!fname || !lname || !password || !email || !confirmPassword) {
          setMessage("Fill the required fields");
