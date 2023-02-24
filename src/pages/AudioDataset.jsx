@@ -1,16 +1,22 @@
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid';
+import { FileDownload } from '@mui/icons-material';
+import { Box, Button, Link } from '@mui/material'
 import { collection, getDocs } from 'firebase/firestore';
+import { getDownloadURL, listAll, ref } from 'firebase/storage';
+import JSZip from 'jszip';
 import MUIDataTable from 'mui-datatables';
 import React, { useEffect, useState } from 'react'
 import { LineWave } from 'react-loader-spinner';
+import { useNavigate } from 'react-router-dom';
 import Wrap from '../components/Wrap'
-import { db } from '../utils/firebase-config';
+import { db, storage } from '../utils/firebase-config';
 
 const AudioDataset = () => {
+  const [downloadUrl, setDownloadUrl] = useState('');
   const metadataCollectionRef = collection(db, "metadata");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
    const columns = [
     { name: 'sequence_id', label: 'ID', },
@@ -35,6 +41,33 @@ const AudioDataset = () => {
     
   }, [])
 
+
+  useEffect(() => {
+    downloadHandler();
+  },[data])
+
+
+  const downloadHandler = async () => {
+    try {
+      const zip = new JSZip();
+      data.map(async (item) => {
+        const url = item.audio_url;
+        const response = await fetch(url);
+        const blob = await response.blob();
+        zip.file(item.name, blob);
+      })
+
+      // Generate the zip folder and get its content as a Blob
+      const content = await zip.generateAsync({ type: 'blob' });
+
+      // Create a URL for the Blob and set it as the download URL
+      const url = URL.createObjectURL(content);
+      setDownloadUrl(url);
+      } catch (error) {
+        console.log(error.message);
+      }
+  }
+
  
   return (
     <Wrap>
@@ -44,7 +77,21 @@ const AudioDataset = () => {
           color: 'black',
           margin: 'auto',
           mb:15
-        }}>
+      }}>
+        <Link href={downloadUrl}>
+          <Button variant='contained'
+          sx={{
+            m: 2,
+            ml: 'auto',
+            display: 'flex',
+            justifyContent:'center'
+          }}
+        >
+          <FileDownload /> 
+          Download Audio
+        </Button>
+        </Link>
+
         {
           !loading ? (
             <MUIDataTable
