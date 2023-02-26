@@ -1,5 +1,6 @@
 import { FileDownload } from '@mui/icons-material';
-import { Box, Button, Link } from '@mui/material'
+import { Box, Button, Link, Typography } from '@mui/material'
+import { saveAs } from 'file-saver';
 import { collection, getDocs } from 'firebase/firestore';
 import { getDownloadURL, listAll, ref } from 'firebase/storage';
 import JSZip from 'jszip';
@@ -11,12 +12,11 @@ import Wrap from '../components/Wrap'
 import { db, storage } from '../utils/firebase-config';
 
 const AudioDataset = () => {
-  const [downloadUrl, setDownloadUrl] = useState('');
+  const [downloading, setDownloading] = useState(false);
   const metadataCollectionRef = collection(db, "metadata");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
 
    const columns = [
     { name: 'sequence_id', label: 'ID', },
@@ -42,29 +42,26 @@ const AudioDataset = () => {
   }, [])
 
 
-  useEffect(() => {
-    downloadHandler();
-  },[data])
-
-
   const downloadHandler = async () => {
+    setDownloading(true);
     try {
       const zip = new JSZip();
-      data.map(async (item) => {
-        const url = item.audio_url;
-        const response = await fetch(url);
-        const blob = await response.blob();
-        zip.file(item.name, blob);
-      })
+      const waves = zip.folder('waves');
 
-      // Generate the zip folder and get its content as a Blob
+      const res = await Promise.all(
+        data.map(async (item) => {
+          const url = item.audio_url;
+          const audioBlob = await fetch(url).then((r) => r.blob());
+          waves.file(`${item.sequence_id}.wav`, audioBlob)
+        })
+      );
+      
       const content = await zip.generateAsync({ type: 'blob' });
-
-      // Create a URL for the Blob and set it as the download URL
-      const url = URL.createObjectURL(content);
-      setDownloadUrl(url);
+      await saveAs(content, 'waves.zip')
+      setDownloading(false);
       } catch (error) {
         console.log(error.message);
+        setDownloading(false);
       }
   }
 
@@ -78,20 +75,29 @@ const AudioDataset = () => {
           margin: 'auto',
           mb:15
       }}>
-        <Link href={downloadUrl}>
-          <Button variant='contained'
-          sx={{
+
+        {downloading ? (
+          <Typography sx={{
             m: 2,
             ml: 'auto',
             display: 'flex',
-            justifyContent:'center'
-          }}
-        >
-          <FileDownload /> 
-          Download Audio
-        </Button>
-        </Link>
-
+            justifyContent: 'center',
+            fontSize:'2em'
+            }}>downloading...</Typography>
+        ) : (
+          <Button variant='contained' onClick={downloadHandler}
+              sx={{
+                m: 2,
+                ml: 'auto',
+                display: 'flex',
+                justifyContent: 'center'
+              }}
+            >
+              <FileDownload />
+              Download Audio
+            </Button>
+          )
+        }
         {
           !loading ? (
             <MUIDataTable
