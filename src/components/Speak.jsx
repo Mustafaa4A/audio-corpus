@@ -1,12 +1,12 @@
 import { CropSquare, KeyboardDoubleArrowRight, KeyboardVoice, PlayArrow, Replay, Stop } from '@mui/icons-material'
-import { Modal, Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react'
 import { useReactMediaRecorder } from 'react-media-recorder';
 import AudioControl from './AudioControl'
 import BackArrow from './BackArrow';
 import CustomBtn from './CustomBtn';
 import TextDisplay from './TextDisplay';
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db, storage } from '../utils/firebase-config';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { Bars, LineWave } from 'react-loader-spinner';
@@ -30,7 +30,6 @@ const Speak = ({ onClose }) => {
   const [text, setText] = useState({});
 
   const transCollectionRef = collection(db, "transcriptions");
-  const metadataCollectionRef = collection(db, "metadata");
   const [loading, setLoading] = useState(false);
   
   const user = useSelector(auth => auth.user);
